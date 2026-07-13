@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<!-- Draft 2 shell · rev 2 -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bella Cabinet Outlet — Draft 2</title>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
+<style>
+:root{--ivory:#f6f3ed;--paper:#fffdf9;--ink:#202520;--muted:#6b7069;--sage:#44584b;--deep:#26362f;--copper:#bd6d3d;--copper2:#a85c30;--oak:#c7a47a;--line:#ddd8cf;--soft:#ece7de;--warn:#d98a3a;--good:#3f7a52;--serif:Georgia,"Times New Roman",serif;--sans:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ivory);color:var(--ink);font-family:var(--sans);font-size:15px}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none}
+img{display:block;max-width:100%}
+h1,h2,h3,.serif{font-family:var(--serif);font-weight:500;letter-spacing:-.02em}
+.eyebrow{font-size:10px;letter-spacing:.18em;color:var(--copper);font-weight:800;text-transform:uppercase}
+.eyebrow.light{color:#eab18c}
+/* ---- top bars ---- */
+.concept-bar{height:30px;background:var(--deep);color:#e9e3d8;display:flex;align-items:center;justify-content:space-between;padding:0 4vw;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.concept-bar span:first-child{color:#ffd7bd}
+.site-header{height:80px;background:rgba(255,253,249,.96);display:flex;align-items:center;gap:20px;padding:0 3vw;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:11px;text-align:left}
+.brand-mark{width:38px;height:38px;border-radius:50% 50% 45% 55%;display:grid;place-items:center;background:var(--sage);color:#fff;font-family:var(--serif);font-size:24px;font-style:italic;flex:none}
+.brand b{display:block;font-family:var(--serif);font-size:20px;letter-spacing:.12em}
+.brand small{display:block;font-size:8px;letter-spacing:.24em;margin-top:1px;color:var(--muted)}
+.site-header nav{display:flex;gap:2px;margin:0 auto}
+.site-header nav button{padding:10px 13px;font-size:13.5px;border-bottom:2px solid transparent;white-space:nowrap}
+.site-header nav button:hover,.site-header nav button.active{color:var(--copper);border-color:var(--copper)}
+.site-header nav button.projnav{color:var(--sage);font-weight:700}
+.header-tools{display:flex;align-items:center;gap:12px}
+.zip-control{border-left:1px solid var(--line);padding-left:13px;display:grid}
+.zip-control span{font-size:9px;text-transform:uppercase;color:var(--muted);letter-spacing:.08em}
+.zip-control input{border:0;background:transparent;width:52px;font-weight:700;padding:1px 0;outline:none}
+.mode-toggle{border:1px solid var(--line);border-radius:99px;background:var(--soft);display:flex;padding:2px}
+.mode-toggle span{font-size:10.5px;padding:6px 10px;border-radius:99px;color:var(--muted);font-weight:700}
+.mode-toggle .on{background:#fff;color:var(--ink);box-shadow:0 1px 4px #0002}
+.cart-button{border-radius:6px;background:var(--sage);color:#fff;padding:11px 15px;font-weight:700;font-size:13px;position:relative;transition:.2s}
+.cart-button:hover{background:#34463c}
+.cart-button b{background:#fff;color:var(--sage);border-radius:10px;padding:1px 7px;margin-left:6px}
+.pro-banner{background:var(--copper);color:#fff;text-align:center;font-size:12px;padding:7px;display:none}
+.pro-banner b{margin-right:6px}.pro-banner button{text-decoration:underline;color:#ffe9d8;font-size:12px}
+/* ---- hero / home ---- */
+.hero{min-height:600px;display:grid;grid-template-columns:57% 43%;background:#d8d2c8;position:relative}
+.hero-media{position:relative;overflow:hidden}
+.hero-media img{width:100%;height:100%;object-fit:cover}
+.hero-media:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 55%,#d8d2c8 99%)}
+.hero-copy{align-self:center;padding:60px 5vw 60px 3.5vw;position:relative;z-index:2}
+.hero h1{font-size:clamp(42px,4.6vw,68px);line-height:1;margin:16px 0 20px}
+.hero h1 em{color:var(--sage)}
+.hero-copy>p{font-size:17px;line-height:1.65;color:#4e544f;max-width:540px}
+.button-row{display:flex;gap:12px;margin:28px 0 20px;flex-wrap:wrap}
+.primary,.secondary{border:1px solid var(--sage);border-radius:5px;padding:14px 20px;font-weight:700;transition:.2s;font-size:14px}
+.primary{background:var(--sage);color:#fff}
+.primary:hover{background:#34463c;transform:translateY(-1px)}
+.primary.copper{background:var(--copper);border-color:var(--copper)}
+.primary.copper:hover{background:var(--copper2)}
+.primary.small{padding:9px 13px;font-size:12.5px}
+.primary.wide{width:100%}
+.secondary{background:transparent;color:var(--sage)}
+.secondary:hover{background:#ffffff66}
+.trust-row{display:flex;gap:16px;font-size:11.5px;color:#555d56;flex-wrap:wrap}
+.trust-row .tick{color:var(--good);font-weight:800}
+.hero-float{position:absolute;z-index:3;right:4%;bottom:7%;background:#fffdf8ea;backdrop-filter:blur(8px);border:1px solid #ffffffa0;box-shadow:0 18px 40px #24322933;padding:14px 18px;border-radius:8px;font-size:11px;color:var(--muted)}
+.hero-float b{display:block;color:var(--ink);font-size:14px;margin-top:2px}
+.wrap{max-width:1340px;margin:0 auto;padding:0 3vw}
+.sec-h{display:flex;align-items:end;justify-content:space-between;margin:60px 0 24px;gap:20px}
+.sec-h h2{font-size:clamp(30px,3.2vw,44px)}
+.sec-h .sub{font-size:13px;color:var(--muted);max-width:420px;text-align:right}
+.text-link{color:var(--copper);font-weight:700;padding:6px 0}
+/* brand tiles (kept from draft 1, restyled) */
+.brands{display:grid;grid-template-columns:repeat(8,1fr);gap:12px}
+.btile{background:var(--paper);border:1.5px solid var(--line);border-radius:10px;padding:16px 8px 13px;text-align:center;transition:.2s}
+.btile:hover{border-color:var(--copper);transform:translateY(-3px);box-shadow:0 12px 26px #25372c14}
+.btile.sel{border-color:var(--copper);background:#fdf6ef;box-shadow:0 6px 18px #bd6d3d22}
+.bmono{width:44px;height:44px;border-radius:50% 50% 45% 55%;margin:0 auto 9px;display:grid;place-items:center;font-family:var(--serif);font-size:18px;font-style:italic;color:#fff}
+.btile .bn{display:block;font-size:12.5px;font-weight:700;line-height:1.25}
+.btile .bt{display:block;font-size:10px;color:var(--muted);margin-top:5px;line-height:1.35}
+/* featured photo cards */
+.feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.feat-card{position:relative;border-radius:10px;overflow:hidden;height:300px;text-align:left;display:block;width:100%}
+.feat-card img{width:100%;height:100%;object-fit:cover;transition:.5s}
+.feat-card:hover img{transform:scale(1.04)}
+.feat-card .fc-ov{position:absolute;inset:auto 0 0 0;padding:40px 16px 14px;background:linear-gradient(transparent,#1c261fd9);color:#fff}
+.feat-card .fc-ov small{font-size:9px;letter-spacing:.16em;color:#eab18c;font-weight:800}
+.feat-card .fc-ov b{display:block;font-family:var(--serif);font-size:21px;font-weight:500}
+.feat-card .fc-ov span{font-size:11px;color:#cdd4ce}
+/* studio callout */
+.design-callout{background:var(--deep);color:#fff;margin-top:70px;display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center;padding:70px 6vw;border-radius:0}
+.design-callout h2{font-size:clamp(32px,3.4vw,50px);margin:12px 0 16px}
+.design-callout p,.design-callout li{color:#cdd4ce;line-height:1.65}
+.design-callout ul{padding-left:18px;margin:18px 0 26px}
+.design-art{position:relative;border-radius:200px 200px 14px 14px;overflow:hidden;min-height:400px;background:radial-gradient(circle at 50% 60%,#607267,#30473a 65%,#1d2c25)}
+.design-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.88;mix-blend-mode:luminosity}
+.design-art .da-tag{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);background:#fffdf8e8;color:var(--ink);border-radius:99px;padding:9px 18px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 10px 26px #0006}
+/* why table (kept from draft 1, restyled) */
+.why{background:var(--soft);margin-top:80px;padding:70px 3vw 80px}
+.why h2{text-align:center;font-size:clamp(30px,3.4vw,46px)}
+.why h2 em{color:var(--copper)}
+.why p.sub{text-align:center;color:var(--muted);margin:12px 0 34px;font-size:14px}
+.wtable{max-width:900px;margin:0 auto;width:100%;border-collapse:collapse;font-size:14px;background:var(--paper);border-radius:12px;overflow:hidden;box-shadow:0 20px 50px #25372c1a}
+.wtable th,.wtable td{padding:14px 18px;border-bottom:1px solid var(--line);text-align:center}
+.wtable td:first-child{text-align:left;font-weight:600}
+.wtable thead th{background:var(--deep);color:#f0ede6;font-size:12.5px;letter-spacing:.04em}
+.wtable thead th:nth-child(2){background:var(--copper);color:#fff}
+.wtable .y{color:var(--good);font-weight:800}.wtable .n{color:#b23a3a;font-weight:800}
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:10px}
+.steps article{border-top:1px solid #a8aaa4;padding:26px 8px}
+.steps article>span{color:var(--copper);font-family:var(--serif);font-size:26px}
+.steps h3{font-size:23px;margin:8px 0}
+.steps p{color:var(--muted);line-height:1.6;font-size:13.5px}
+/* ---- shop ---- */
+.page-intro{max-width:860px;padding:55px 0 10px}
+.page-intro h1{font-size:clamp(36px,4vw,56px);margin:14px 0 12px}
+.page-intro p{font-size:16px;color:var(--muted)}
+.shop-layout{display:grid;grid-template-columns:240px 1fr;gap:26px;margin-top:20px;padding-bottom:80px}
+.filters{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px;height:fit-content;position:sticky;top:96px}
+.fgroup{margin-bottom:18px}
+.fgroup h4{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:9px;font-family:var(--sans);font-weight:800}
+.fgroup label{display:flex;align-items:center;gap:8px;font-size:13px;padding:3.5px 0}
+.fgroup input[type=checkbox],.fgroup input[type=radio]{accent-color:var(--copper)}
+.toolrow{display:flex;gap:10px;align-items:center;margin-bottom:16px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:12px}
+.search{display:flex;align-items:center;gap:9px;border:1px solid var(--line);background:#fff;border-radius:5px;padding:0 12px;flex:1}
+.search input{width:100%;border:0;padding:10px 0;background:transparent;outline:none}
+.toolrow select{padding:10px 12px;border:1px solid var(--line);border-radius:5px;background:#fff;font-size:13px}
+.compare-pill{background:var(--copper);color:#fff;border-radius:5px;padding:10px 16px;font-weight:700;font-size:13px;display:none}
+.res{font-size:12.5px;color:var(--muted);margin:0 2px 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:18px}
+.pcard{background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden;transition:.25s;display:flex;flex-direction:column}
+.pcard:hover{box-shadow:0 16px 35px #25372c14;transform:translateY(-3px)}
+.pviz{height:190px;position:relative;overflow:hidden;background:#e9e5dd}
+.pviz img{width:100%;height:100%;object-fit:cover;transition:.45s}
+.pcard:hover .pviz img{transform:scale(1.03)}
+.shipb{position:absolute;top:10px;left:10px;font-size:9.5px;font-weight:800;padding:5px 9px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;background:#fffdf5}
+.s24{color:var(--good)} .s13{color:#3b5b8c} .s35{color:#9a7014}
+.pbody{padding:15px 16px 16px;display:flex;flex-direction:column;gap:5px;flex:1}
+.pbrand{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--copper);font-weight:800}
+.pname{font-family:var(--serif);font-size:20px;line-height:1.15}
+.psku{font-size:11px;color:var(--muted)}
+.stars{color:#aa762d;font-size:12px;letter-spacing:.08em}
+.stars span{color:var(--muted);letter-spacing:0;margin-left:5px;font-size:11px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0 2px}
+.chip{font-size:10px;background:var(--soft);color:#5a5f56;padding:3px 8px;border-radius:12px}
+.prow{display:flex;align-items:end;justify-content:space-between;margin-top:auto;padding-top:10px;border-top:1px solid var(--line)}
+.price{font-family:var(--serif);font-size:21px}
+.price small{display:block;font:600 9px var(--sans);color:var(--muted);letter-spacing:.05em}
+.price .was{text-decoration:line-through;color:var(--muted);font-size:13px;margin-right:5px}
+.card-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.compare-check{font-size:11.5px;color:var(--muted);display:flex;gap:6px;align-items:center}
+.compare-check input{accent-color:var(--copper)}
+/* compare modal */
+.modal-bg{position:fixed;inset:0;background:#14221bc7;z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.modal{background:var(--paper);border-radius:12px;max-width:960px;width:100%;max-height:90vh;overflow:auto;padding:30px;position:relative}
+.modal h3{font-size:30px;margin-bottom:4px}
+.modal .msub{font-size:13px;color:var(--muted);margin-bottom:20px}
+.modal-close{position:absolute;right:14px;top:10px;font-size:28px;color:var(--muted)}
+.ctable{width:100%;border-collapse:collapse;font-size:13px}
+.ctable th,.ctable td{border:1px solid var(--line);padding:11px 13px;text-align:left;vertical-align:top}
+.ctable thead th{background:var(--deep);color:#f0ede6;font-weight:600}
+.ctable tr td:first-child{background:var(--soft);font-weight:700;width:150px}
+.ctable img{width:100%;height:110px;object-fit:cover;border-radius:6px}
+/* ---- cart drawer ---- */
+.drawer{position:fixed;top:0;right:-460px;width:450px;max-width:96vw;height:100%;background:var(--paper);z-index:110;box-shadow:-10px 0 40px #0003;transition:right .3s;display:flex;flex-direction:column}
+.drawer.open{right:0}
+.dhead{background:var(--deep);color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
+.dhead b{font-family:var(--serif);font-size:20px;font-weight:500}
+.dhead button{color:#cdd4ce;font-size:22px}
+.dbody{flex:1;overflow:auto;padding:18px 22px}
+.citem{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);font-size:13px}
+.citem .rm{color:#b23a3a;font-size:11.5px;text-decoration:underline}
+.grp{margin-top:14px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:800;border-bottom:2px solid var(--line);padding-bottom:5px}
+.dopt label{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;margin-bottom:7px;background:#fff}
+.dopt label.on{border-color:var(--copper);background:#fdf6ef}
+.dopt input{accent-color:var(--copper);margin-right:8px}
+.dnote{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.5}
+.dfoot{border-top:1px solid var(--line);padding:16px 22px;background:var(--ivory)}
+.trow{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;color:var(--muted)}
+.trow.tot{font-size:17px;font-weight:700;color:var(--ink);padding-top:8px}
+.trow.tot b{font-family:var(--serif);font-size:22px}
+.fin{font-size:12px;color:var(--good);font-weight:700;margin:6px 0 12px}
+/* ---- designer ---- */
+.studio-wrap{padding:30px 3vw 70px}
+.designer{display:grid;grid-template-columns:1fr 350px;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 20px 50px #25372c14;margin-top:18px}
+#stage{height:620px;position:relative;background:linear-gradient(#dfe5e0,#cfd8d0)}
+#stage canvas{display:block;outline:none}
+.stage-ui{position:absolute;top:12px;left:12px;display:flex;gap:8px;z-index:5;flex-wrap:wrap}
+.stage-ui button{background:#fffdf8e6;border:1px solid #ffffffb0;border-radius:99px;padding:8px 14px;font-size:11.5px;font-weight:700;box-shadow:0 4px 14px #0002;transition:.15s}
+.stage-ui button:hover{background:#fff}
+.stage-ui button.on{background:var(--sage);color:#fff;border-color:var(--sage)}
+.nolog{position:absolute;top:12px;right:12px;font-size:10.5px;font-weight:800;color:var(--good);background:#e8f5ecdd;padding:6px 12px;border-radius:16px;z-index:5}
+.stagehint{position:absolute;bottom:12px;left:12px;font-size:11px;color:#5c635c;background:#ffffffc9;padding:6px 12px;border-radius:16px;z-index:5}
+.scene-label{position:absolute;bottom:12px;right:12px;background:#ffffffd8;padding:8px 12px;border-radius:8px;display:grid;font-size:10px;z-index:5}
+.scene-label b{font-size:12px}.scene-label span{color:var(--muted)}
+.sel-pop{position:absolute;z-index:6;background:#26362fef;color:#fff;border-radius:8px;padding:10px 13px;font-size:11px;display:none;pointer-events:none;box-shadow:0 10px 30px #0005;max-width:200px}
+.sel-pop b{display:block;font-size:13px}.sel-pop span{color:#b9c4bb}
+.dpanel{padding:20px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:14px;max-height:620px;overflow:auto}
+.dpanel h3{font-size:22px}
+.lbl{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;font-weight:800}
+.dpanel select{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;background:#fff;font-size:13.5px}
+.swrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sw{border:2px solid var(--line);border-radius:9px;padding:6px;text-align:center;transition:.15s;background:#fff}
+.sw:hover{border-color:var(--copper)}
+.sw.sel{border-color:var(--copper);box-shadow:0 0 0 2px #bd6d3d2e}
+.sw .swc{height:44px;border-radius:5px;box-shadow:inset 0 1px 4px #0002;margin-bottom:5px;background-size:cover;background-position:center 30%}
+.sw .swn{font-size:10px;line-height:1.25}
+.sw .swn i{color:var(--muted);font-style:normal}
+.togrow{display:flex;background:var(--soft);border-radius:8px;padding:4px;gap:4px}
+.togrow button{flex:1;padding:8px;border-radius:6px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.togrow button.on{background:#fff;color:var(--ink);box-shadow:0 1px 4px #0002}
+.health{border-radius:10px;padding:14px 16px;background:#fff2df;display:flex;align-items:center;gap:12px}
+.health.good{background:#e7f0e8}
+.health b{font-family:var(--serif);font-size:34px}
+.health div{display:grid}.health small{color:var(--muted);font-size:11px}
+.rule-card{display:flex;gap:10px;border:1px solid #e3b47d;background:#fff8ec;padding:12px;border-radius:8px;font-size:12px}
+.rule-card.resolved{border-color:#9fbea4;background:#eef6ef}
+.rule-card>span{width:22px;height:22px;flex:none;background:var(--warn);color:#fff;border-radius:50%;display:grid;place-items:center;font-weight:900}
+.rule-card.resolved>span{background:var(--good)}
+.rule-card p{font-size:11px;line-height:1.45;color:var(--muted);margin-top:3px}
+.assist-button{width:100%;border-radius:8px;background:var(--deep);color:#fff;padding:12px;display:flex;gap:10px;text-align:left;align-items:center;transition:.2s}
+.assist-button:hover{background:#1c2a22}
+.assist-button>span{color:#efb38c;font-size:19px}
+.assist-button small{color:#bdc6c0;font-size:10.5px;display:block}
+.pricebox{background:var(--deep);color:#fff;border-radius:11px;padding:15px 17px}
+.pricebox .pl{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#9fb0a6;font-weight:800}
+.pricebox .pv{font-family:var(--serif);font-size:32px;color:#eab18c;margin:2px 0}
+.pricebox .pm{font-size:11.5px;color:#c6d2c8}
+.pricebox .pf{font-size:11.5px;color:#8fd0a4;font-weight:700;margin-top:4px}
+.dbtn{width:100%;padding:13px;border-radius:8px;font-size:14px;font-weight:700;transition:.2s}
+.dbtn.g{background:var(--copper);color:#fff}.dbtn.g:hover{background:var(--copper2)}
+.dbtn.o{background:#fff;color:var(--sage);border:1.5px solid var(--sage)}.dbtn.o:hover{background:var(--sage);color:#fff}
+/* ---- project ---- */
+.project-page{padding:55px 0 90px}
+.project-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap}
+.project-head h1{font-size:clamp(34px,3.6vw,52px);margin:8px 0}
+.project-head p{color:var(--muted)}
+.status-steps{display:flex;align-items:center;background:var(--paper);border:1px solid var(--line);padding:20px;margin:30px 0;border-radius:10px}
+.status-steps span{width:27px;height:27px;flex:none;border:1.5px solid var(--line);border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700}
+.status-steps span.done{background:var(--sage);border-color:var(--sage);color:#fff}
+.status-steps span.current{border:2px solid var(--copper);color:var(--copper)}
+.status-steps b{font-size:11px;margin:0 0 0 7px}
+.status-steps i{height:1px;background:var(--line);flex:1;margin:0 14px}
+.project-grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+.pj-card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:22px;margin-bottom:16px}
+.pj-card h2{font-size:26px;margin-bottom:6px}
+.pj-card>p{color:var(--muted);font-size:12.5px}
+.design-strip{display:grid;grid-template-columns:230px 1fr;gap:18px;align-items:center}
+.design-strip img{border-radius:8px;height:140px;width:100%;object-fit:cover}
+.shipment{display:grid;grid-template-columns:36px 1fr 140px auto;gap:10px;align-items:center;border-top:1px solid var(--line);padding:13px 0;font-size:12.5px}
+.shipment-icon{width:29px;height:29px;border-radius:50%;background:var(--soft);display:grid;place-items:center;font:italic 17px var(--serif);color:var(--sage)}
+.shipment small{color:var(--muted);display:block;font-size:10.5px}
+.shipment-state{font-size:9px;background:#e5efe6;color:#56725a;padding:5px 8px;border-radius:4px;font-weight:800;letter-spacing:.06em}
+.psum p{display:flex;justify-content:space-between;font-size:13px;margin:7px 0}
+.psum p span{color:var(--muted)}
+.grand{border-top:2px solid var(--ink);padding-top:12px;margin-top:10px;display:flex;justify-content:space-between;align-items:center}
+.grand b{font-family:var(--serif);font-size:25px}
+.contact{display:flex;align-items:center;gap:11px}
+.avatar{width:42px;height:42px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--sage);color:#fff;font-weight:700}
+.contact small{font-size:9px;color:var(--copper);letter-spacing:.1em;font-weight:800}
+.contact div{display:grid;flex:1}.contact span{font-size:10.5px;color:var(--muted)}
+.contact button{border:1px solid var(--line);background:#fff;padding:8px 12px;border-radius:5px;font-size:12px}
+/* ---- pro ---- */
+.pro-hero{background:linear-gradient(95deg,#1f3028f2 0 45%,#1f302899 65%,#1f302833),url('assets/ghi-pacific-grey.jpg') center/cover;color:#fff;padding:90px 4vw;border-radius:14px;margin:40px 0}
+.pro-hero h1{font-size:clamp(36px,4vw,58px);margin:14px 0 16px;max-width:640px}
+.pro-hero p{font-size:16.5px;color:#cad2cc;line-height:1.6;max-width:560px}
+.pro-stats{display:flex;gap:50px;margin-top:44px;flex-wrap:wrap}
+.pro-stats article{display:grid}
+.pro-stats b{font:500 34px var(--serif);color:#e4b18c}
+.pro-stats span{font-size:10.5px;color:#bbc5be;letter-spacing:.06em;text-transform:uppercase}
+.pro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:10px 0 60px}
+.pro-grid article{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:24px}
+.pro-grid b{font-family:var(--serif);font-size:21px;font-weight:500}
+.pro-grid p{color:var(--muted);font-size:13px;line-height:1.6;margin-top:8px}
+/* ---- toast / guide / footer ---- */
+#toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--deep);color:#fff;padding:14px 24px;border-radius:8px;font-size:13.5px;z-index:200;opacity:0;transition:.32s;box-shadow:0 16px 40px #0005;max-width:92vw}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+#toast b{color:#eab18c}
+.guide-button{position:fixed;right:22px;bottom:22px;z-index:90;background:var(--copper);color:#fff;padding:13px 18px;border-radius:99px;box-shadow:0 12px 30px #2a201a55;font-weight:800;font-size:13px;transition:.2s}
+.guide-button:hover{background:var(--copper2);transform:translateY(-2px)}
+.guide-steps{display:grid;gap:8px;margin:20px 0 8px}
+.guide-steps button{border:1px solid var(--line);background:#fff;display:flex;align-items:center;gap:12px;padding:12px;text-align:left;border-radius:8px;transition:.15s}
+.guide-steps button:hover{border-color:var(--copper)}
+.guide-steps button>span{width:29px;height:29px;flex:none;border-radius:50%;background:var(--soft);display:grid;place-items:center;color:var(--copper);font-family:var(--serif)}
+.guide-steps div{display:grid;flex:1}
+.guide-steps small{color:var(--muted);font-size:11px}
+footer{background:#17231e;color:#8fa1b8;padding:46px 4vw 30px;margin-top:70px;font-size:13px;text-align:center;line-height:2}
+footer b{color:#fff}
+footer .fbrands{color:#9db3a4;font-size:11.5px;letter-spacing:.04em}
+.demo-tag{display:inline-block;background:#d4a01726;color:#eab18c;border:1px solid #d4a01766;padding:3px 12px;border-radius:14px;font-size:11px;margin-top:10px}
+.view{display:none}.view.active{display:block}
+@media(max-width:1100px){.brands{grid-template-columns:repeat(4,1fr)}.feat-grid{grid-template-columns:repeat(2,1fr)}.shop-layout{grid-template-columns:1fr}.filters{position:static}.designer{grid-template-columns:1fr}.dpanel{max-height:none;border-left:0;border-top:1px solid var(--line)}.project-grid{grid-template-columns:1fr}.site-header nav{display:none}.hero{grid-template-columns:1fr}.hero-media{position:absolute;inset:0}.hero-media:after{background:#d8d2c8dd}.hero-copy{padding:70px 6vw}.design-callout{grid-template-columns:1fr}.pro-grid,.steps{grid-template-columns:1fr}.design-strip{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="concept-bar"><span>Private concept demo — Draft 2</span><span>Sample pricing &amp; lead times — verify before production</span></div>
+
+<header class="site-header">
+  <button class="brand" onclick="setView('home')" aria-label="Bella Cabinet Outlet home">
+    <span class="brand-mark">B</span><span><b>BELLA</b><small>CABINET OUTLET</small></span>
+  </button>
+  <nav id="mainnav">
+    <button data-v="shop" onclick="setView('shop')">Shop Brands</button>
+    <button data-v="shop2" onclick="setView('shop');openStyleFilter()">Door Styles</button>
+    <button data-v="designer" onclick="setView('designer')">3D Designer</button>
+    <button data-v="pro" onclick="setView('pro')">Trade Pros</button>
+    <button data-v="free" onclick="setView('designer');setTimeout(()=>toast('Tip: use <b>Send to a KDG designer</b> on the right — free, 24–48 hr turnaround.'),600)">Free Design</button>
+    <button data-v="project" id="projnav" class="projnav" style="display:none" onclick="setView('project')">✦ My Project</button>
+  </nav>
+  <div class="header-tools">
+    <label class="zip-control"><span>Deliver to</span><input id="zip" value="30318"></label>
+    <button class="mode-toggle" id="modetog" onclick="toggleMode()" title="Switch between homeowner and trade pricing"><span class="on" id="mHome">Home</span><span id="mPro">Pro</span></button>
+    <button class="cart-button" onclick="toggleCart(true)">My Cart <b id="cartct">0</b></button>
+  </div>
+</header>
+<div class="pro-banner" id="probanner"><b>Bella Pro pricing on</b> — showing net trade prices (demo: 12% off list). <button onclick="setView('pro')">How Bella Pro works →</button></div>
+
+<!-- ============ HOME ============ -->
+<div class="view active" id="view-home">
+  <section class="hero">
+    <div class="hero-media"><img src="assets/fabuwood-galaxy-frost.jpg" alt="Fabuwood Galaxy Frost kitchen"></div>
+    <div class="hero-copy">
+      <span class="eyebrow">Kitchens Design Group presents</span>
+      <h1>Cabinets, designed around <em>your life.</em></h1>
+      <p>Shop eight trusted cabinet brands, build your room in 3D, and coordinate every delivery—without stitching together three different services.</p>
+      <div class="button-row">
+        <button class="primary" onclick="setView('designer')">Start designing <span style="margin-left:10px">→</span></button>
+        <button class="secondary" onclick="setView('shop')">Shop all cabinets</button>
+      </div>
+      <div class="trust-row"><span><i class="tick">✓</i> Guided design review</span><span><i class="tick">✓</i> Direct-to-site delivery</span><span><i class="tick">✓</i> Pro-ready quoting</span></div>
+    </div>
+    <div class="hero-float"><span style="color:var(--warn)">●</span> Live 3D design check<b>Your kitchen, priced in real time</b></div>
+  </section>
+
+  <div class="wrap">
+    <div class="sec-h"><h2>Shop by brand</h2><span class="sub">Every brand named, every spec published — click a tile to browse that catalog</span></div>
+    <div class="brands" id="brandstrip"></div>
+
+    <div class="sec-h"><h2>Start with a look you love</h2><button class="text-link" onclick="setView('shop')">Browse the full catalog →</button></div>
+    <div class="feat-grid" id="featgrid"></div>
+  </div>
+
+  <section class="design-callout">
+    <div class="design-art"><img src="assets/jsi-dover-white.jpg" alt=""><span class="da-tag">▶ Live 3D — real brand finishes</span></div>
+    <div>
+      <span class="eyebrow light">Bella Design Studio</span>
+      <h2>See the kitchen before you buy the boxes.</h2>
+      <p>A true 3D room with your actual brand finishes — not a sketch. Swap brands live, open the doors, drag cabinets, and watch the price update.</p>
+      <ul><li>Real manufacturer door finishes rendered in 3D</li><li>Design checks with one-click Bella Assist fixes</li><li>One project total, add straight to your cart</li></ul>
+      <button class="primary copper" onclick="setView('designer')">Open the 3D studio →</button>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="sec-h"><h2>One guided path. No blind spots.</h2></div>
+    <div class="steps">
+      <article><span>01</span><h3>Shop across brands</h3><p>Filter by style, construction, color, price, and delivery window — then compare real specs side by side.</p></article>
+      <article><span>02</span><h3>Design with confidence</h3><p>Build your room in true 3D, catch fit issues early, and get a free KDG designer review in 24–48 hours.</p></article>
+      <article><span>03</span><h3>Deliver as a project</h3><p>Choose curbside, liftgate, white-glove, or jobsite delivery — coordinated across every supplier warehouse.</p></article>
+    </div>
+  </div>
+
+  <section class="why">
+    <h2>Why buyers switch to <em>Bella</em></h2>
+    <p class="sub">A direct comparison with the leading online cabinet outlets</p>
+    <div style="overflow-x:auto"><table class="wtable">
+      <thead><tr><th></th><th>Bella Cabinet Outlet</th><th>Typical online outlet</th></tr></thead>
+      <tbody>
+        <tr><td>Real, named manufacturer brands</td><td class="y">✓ 8 brands</td><td class="n">✗ private labels</td></tr>
+        <tr><td>Side-by-side spec comparison</td><td class="y">✓</td><td class="n">✗</td></tr>
+        <tr><td>Returns policy</td><td class="y">✓ returns accepted</td><td class="n">✗ all sales final</td></tr>
+        <tr><td>Delivery options</td><td class="y">Curbside · liftgate · white-glove · jobsite</td><td class="n">Curbside only</td></tr>
+        <tr><td>3D design tool</td><td class="y">✓ instant, no login wall</td><td class="n">Account required</td></tr>
+        <tr><td>Real showrooms to visit</td><td class="y">✓ five (GA · FL · TN)</td><td class="n">✗ online only</td></tr>
+        <tr><td>Countertops + cabinets, one order</td><td class="y">✓ in-house fabrication</td><td class="n">✗</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+</div>
+
+<!-- ============ SHOP ============ -->
+<div class="view" id="view-shop">
+  <div class="wrap">
+    <div class="page-intro"><span class="eyebrow">The Bella marketplace</span><h1>Cabinets from brands you trust.</h1><p>One searchable catalog across eight real manufacturers — with expert design help when you want it.</p></div>
+    <div class="brands" id="brandstrip2" style="margin-bottom:6px"></div>
+    <div class="shop-layout">
+      <aside class="filters" id="filters"></aside>
+      <div>
+        <div class="toolrow">
+          <label class="search">⌕<input id="q" placeholder="Search brand, collection, finish…" oninput="render()"></label>
+          <select id="sortsel" onchange="render()">
+            <option value="pop">Most popular</option>
+            <option value="plo">Price: low → high</option>
+            <option value="phi">Price: high → low</option>
+            <option value="ship">Fastest shipping</option>
+          </select>
+          <button class="compare-pill" id="cmppill" onclick="openCompare()">Compare <span id="cmpn">0</span> →</button>
+        </div>
+        <div class="res" id="rescount"></div>
+        <div class="grid" id="grid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DESIGNER ============ -->
+<div class="view" id="view-designer">
+  <div class="wrap studio-wrap">
+    <div class="sec-h" style="margin-top:26px"><h2>Bella Design Studio</h2><span class="sub">Start in plan view to arrange the room · click a cabinet to select it, click again to open it · jump to 3D when ready</span></div>
+    <div class="designer">
+      <div id="stage">
+        <div class="stage-ui">
+          <button id="camPlan" class="on" onclick="setCam('plan')">▦ Plan view</button>
+          <button id="camOverview" onclick="setCam('overview')">⌂ 3D Overview</button>
+          <button id="camCounter" onclick="setCam('counter')">👁 Counter level</button>
+          <button id="camIsland" onclick="setCam('island')">◎ Island</button>
+          <button id="dayBtn" onclick="toggleDay()">☾ Evening</button>
+          <button id="removeBtn" style="display:none;background:#b23a3a;color:#fff;border-color:#b23a3a" onclick="removeSel()">🗑 Remove</button>
+        </div>
+        <div class="nolog">✓ No login required</div>
+        <div class="stagehint" id="stagehint">Plan view: click a cabinet to select it, then drag to arrange — jump to 3D Overview when ready</div>
+        <div class="scene-label"><b id="slBrand">—</b><span id="slLine">—</span></div>
+        <div class="sel-pop" id="selpop"></div>
+      </div>
+      <div class="dpanel">
+        <h3>Lake House Kitchen</h3>
+        <div><div class="lbl">1 · Brand</div><select id="dbrand" onchange="onBrand()"></select></div>
+        <div><div class="lbl">2 · Door style &amp; finish — real samples</div><div class="swrow" id="dlines"></div></div>
+        <div><div class="lbl">3 · Assembly</div><div class="togrow"><button id="tRTA" class="on" onclick="setAsm(false)">RTA — save 20%</button><button id="tASM" onclick="setAsm(true)">Assembled</button></div></div>
+        <div><div class="lbl">4 · Quartz countertop</div><div class="swrow" id="dtops"></div></div>
+        <div><div class="lbl">Design health</div>
+          <div class="health" id="health"><b id="hscore">92</b><div><small id="hmsg">1 issue to resolve</small></div></div>
+          <div class="rule-card" id="rulecard" style="margin-top:8px"><span id="ruleicon">!</span><div><b id="ruletitle" style="font-size:12.5px">Missing filler at refrigerator</b><p id="ruletext">Add a 3″ filler beside the fridge so the door clears the wall. Look for the marker in the scene.</p></div></div>
+          <button class="assist-button" id="assistbtn" onclick="bellaAssist()" style="margin-top:8px"><span>✦</span><div><b style="font-size:13px">Fix with Bella Assist</b><small>Adds a matching 3″ filler · +$74</small></div></button>
+        </div>
+        <div class="pricebox">
+          <div class="pl">Your kitchen · live price</div>
+          <div class="pv" id="dprice">$0</div>
+          <div class="pm" id="dmeta"></div>
+          <div class="pf" id="dfin"></div>
+        </div>
+        <button class="dbtn g" onclick="addDesign()">Add design to My Cart</button>
+        <button class="dbtn o" onclick="sendDesigner()">Send to a KDG designer — free</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PROJECT ============ -->
+<div class="view" id="view-project">
+  <div class="wrap project-page">
+    <div class="project-head">
+      <div><span class="eyebrow">Project #BCO-1048</span><h1>Lake House Kitchen</h1><p id="projaddr">Delivering to ZIP <span class="pzip">30318</span> · started today</p></div>
+      <div style="display:flex;gap:10px"><button class="secondary" onclick="setView('designer')">Edit design</button><button class="primary" id="reviewbtn" onclick="requestReview()">Request expert review</button></div>
+    </div>
+    <div class="status-steps">
+      <span class="done">1</span><b>Plan</b><i></i><span class="current" id="st2">2</span><b>Review</b><i></i><span id="st3">3</span><b>Order</b><i></i><span>4</span><b>Delivery</b>
+    </div>
+    <div class="project-grid">
+      <section>
+        <div class="pj-card design-strip"><img src="assets/fabuwood-galaxy-frost.jpg" alt="design"><div><h2>Design summary</h2><p id="pjsummary">—</p><p style="margin-top:8px;font-size:12px"><button class="text-link" onclick="setView('designer')">Open in 3D studio →</button></p></div></div>
+        <div class="pj-card"><span class="eyebrow">Fulfillment plan</span><h2 id="shiph">Coordinated shipments</h2><div id="shipments"></div><p style="margin-top:10px">Every shipment ships direct from the supplier warehouse — you choose curbside, liftgate, white-glove, or jobsite delivery per shipment in the cart.</p></div>
+      </section>
+      <aside>
+        <div class="pj-card psum"><span class="eyebrow">Project summary</span><h2>Totals</h2><div id="pjtotals"></div></div>
+        <div class="pj-card contact"><span class="avatar">KD</span><div><small>YOUR BELLA DESIGNER</small><b>Kendall Davis</b><span>Typically replies within 1 business day</span></div><button onclick="toast('Message sent to <b>Kendall</b> — she\'ll reply by tomorrow morning.')">Message</button></div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PRO ============ -->
+<div class="view" id="view-pro">
+  <div class="wrap">
+    <section class="pro-hero">
+      <span class="eyebrow light">Bella Pro</span>
+      <h1>More projects moving. Fewer details missed.</h1>
+      <p>Net trade pricing across all 8 brands, saved jobsites with delivery appointments, bids returned in hours, and order status on demand — backed by KDG's builder network and fabrication bench.</p>
+      <div class="button-row"><button class="primary copper" onclick="toast('<b>Bella Pro</b> application started — a trade rep will reach out today. (Demo)')">Apply for trade pricing</button><button class="secondary" style="border-color:#fff;color:#fff" onclick="enablePro()">Preview Pro pricing on this site</button></div>
+      <div class="pro-stats"><article><b>8</b><span>supplier catalogs</span></article><article><b>~12%</b><span>avg net discount</span></article><article><b>Hours</b><span>bid turnaround</span></article><article><b>24/7</b><span>order visibility</span></article></div>
+    </section>
+    <div class="sec-h"><h2>What the Pro toggle does</h2><span class="sub">Flip "Pro" in the header any time — here's exactly what changes</span></div>
+    <div class="pro-grid">
+      <article><b>Net trade pricing</b><p>Every price on the site switches to your tier's net price (demo shows 12% off list) with the list price struck through, so margins are visible at a glance.</p></article>
+      <article><b>Jobsite-first delivery</b><p>Delivery defaults to jobsite appointment windows with liftgate, and projects can hold multiple saved site addresses.</p></article>
+      <article><b>Quote-to-PO workflow</b><p>Turn any cart into a client-ready quote, then convert to a PO when approved — with order status shared to your whole crew.</p></article>
+    </div>
+  </div>
+</div>
+
+<!-- compare modal -->
+<div class="modal-bg" id="cmpmodal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('cmpmodal')">×</button>
+    <h3>Side-by-side comparison</h3>
+    <div class="msub">The comparison private-label outlets can't offer — real brands, real specs.</div>
+    <div style="overflow-x:auto"><table class="ctable" id="cmptable"></table></div>
+  </div>
+</div>
+
+<!-- guide modal -->
+<div class="modal-bg" id="guidemodal">
+  <div class="modal" style="max-width:620px">
+    <button class="modal-close" onclick="closeModal('guidemodal')">×</button>
+    <span class="eyebrow">5-minute client walkthrough</span>
+    <h3 style="margin-top:6px">Show the complete Bella story.</h3>
+    <p style="color:var(--muted);font-size:13.5px">A guided path from shopping to design, cart, and the contractor experience.</p>
+    <div class="guide-steps" id="guidesteps"></div>
+    <small style="color:var(--copper);font-weight:700">Tip: in the 3D studio, click the glowing marker by the fridge, then "Fix with Bella Assist" — that's the wow moment.</small>
+  </div>
+</div>
+
+<!-- cart drawer -->
+<div class="drawer" id="drawer">
+  <div class="dhead"><b>My Cart</b><button onclick="toggleCart(false)">×</button></div>
+  <div class="dbody">
+    <div id="cartitems"></div>
+    <div class="dopt" id="shipopts"><div class="lbl" style="margin:16px 0 8px">Delivery — your choice, not ours</div></div>
+    <div class="dnote">Door samples credited back on purchase · freight damage? We replace first, ask questions later · returns accepted (unlike the other guys).</div>
+  </div>
+  <div class="dfoot">
+    <div class="trow"><span>Subtotal</span><span id="tsub">$0</span></div>
+    <div class="trow" id="prosave" style="display:none;color:var(--good)"><span>Bella Pro savings</span><span id="tsave">$0</span></div>
+    <div class="trow"><span>Delivery</span><span id="tship">$0</span></div>
+    <div class="trow tot"><span>Total</span><b id="ttot">$0</b></div>
+    <div class="fin" id="tfin"></div>
+    <button class="dbtn g" onclick="checkout()">Checkout</button>
+  </div>
+</div>
+
+<button class="guide-button" onclick="openGuide()">▶ Demo guide</button>
+<div id="toast"></div>
+
+<footer>
+  <b>Bella Cabinet Outlet</b> · a subsidiary of Kitchens Design Group<br>
+  Showrooms: Marietta HQ · Augusta · Nashville · Santa Rosa Beach · Panama City Beach<br>
+  <span class="fbrands">Fabuwood · Forevermark · US Cabinet Depot · Wolf Home Products · JSI Cabinetry · CNC Cabinetry · Cubitac · GHI Cabinets</span><br>
+  <span class="demo-tag">DEMO ENVIRONMENT — representative pricing · brand imagery shown for private concept demonstration</span>
+</footer>
+
+<script>
+window.DOOR_B64={"fmIce": "data:image/jpeg;base64,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g7d/9+h/jS/8KrX/AKDt1/36X/GgDrP+Eo0//nqKX/hJ9P8A+eorlP8AhVo/6Dt1/wB+V/xpw+GAH/MbuT/2xX/GgDqR4msD/wAtKeviOyY4V81zUXw3CH/kMTn6xD/Gr9p4HW3cE37uB2MYH9aAOgtdUiu5BHGGJPfFadv/AK6P/eFULGwjsYyIh16knJNX7f8A10f+8KAOS8Qti4ufXc3863rL/j0h/wBwVzviU4ubr/fauisf+POH/cH8qAJqKKKACiiigAooooAKWkooAKKKWgBKUUlKKAFopKWgAoFFFABRRRQAUUUUAFHaiigApaSigBaKKKACiiigAooooAKcKbSigAoope1AB2pKWkoAKKKKAFooFHagAooFFABRQKAaAFpKWkoAWiiigAooooAKKKKACiiigAooFFABRRQKAFpaSigBH+7T7b/XR/7wpjfd/Gn23+uj/wB4UAcZ4m/4+br/AH2ro7H/AI84f9wfyrm/E3/Hzdf77V0lj/x5wf7g/lQBPRRRQAUUUUAFFFFABRRRQAUUUUALRmikoAWjtQKDQAClpKKAFooooAKKKKACiiigAooooAKWkpaACiikoAWiiigAoFFFAC0uaQUUALSUUUAL2pKXtR2oASilxRQAUUUUAFFFFAC0lLRQAneiiloAKKKKACiiigAooooAKKKKACiiigBQOaKQUCgAY/KfrTrf/Xx/7wpH+7+NLb/6+P8A3hQBxnib/j4uf99v510lj/x5wf7g/lXN+Jv+Pm6/32/nXSWP/HnB/uD+VAE9FFFABRRRQAUUUUAFFFFAC0GkooAKWkooAWijtQKACjFFFABS0lLQAUUUUAFFFFABRRRQAUCiigBaKBRQAUUUUAFFFFABQKKKAFooooAKKKKAFopKWgBKWkpaACiig0AFFJS5oAKKM0CgBaKSloAKKKKACiiigAooooAKKKKACiiigBG+7+NPt/8AXx/7wpjfd/GpLb/XR/7woA4vxN/x83X++3866Wx/484P9wfyrmvEv/Hxdf77fzrpLH/jzg/3B/KgCxSUUUAFFFFABRRRQAtJRRQAUtJRQAUUopKAFpKKWgBKXpRRQAClpKKAFooooAKBRRQAUUUUAFFFFAC/WkNFGeKAFooFFABRRRQAUUUUAFLmkooAWikpaAClpKKAClpKKAClxSUuaAEpaKKACiig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w/484P8AcH8q5rxP/wAfN3/vtXTWP/HnD/uD+VAE9FFFABRRRQAUUUUAFFFFABRRRQAd6gl/1rfWp6gl/wBc31oAevWn0xOtP/CgApRSUUALRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFLQAlFFFABRRRQAUUUUAFFFFABRRRQAUZpKKAEPTiqd59xqunpVK8+41AHM+G/8Akaro/wDTMf1rta4rw5/yNV1/1zH9a7WgBaKSigBaKSloAKKKKACiiigAooooAD900+1/18f+8KYfumpLb/Xxf7w/nQBxnif/AI+br/faulsf+POH/cX+Vc14nH+k3f8Avt/Oulsf+POD/cH8qALAopOlLQAUUUUAFFFFABRRRQAUUUUAHeoJf9c31qfvUEn+ub60APWn0xOtPoAUe1HekpQaACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooATvRQaKAEPSqd59xqtmqd7/q2oA5rw3/yNV3/ANcx/Wu1rivDf/I1Xf8A1zH9a7WgAoopKAHUU2l7UALSUCigBaKKKACiiigAP3TT7b/Xx/7w/nTD900+3/18f+8P50Acb4o/4+br/fb+ddLY/wDHnB/uD+Vc14o/4+rr/faulsf+POD/AHB/KgCftRnFFFAC0UCjvQAUUUUAFFFFABRRRQAVBL/rm+tT1BL/AK1vrQA9KfTEp9AC/jSCiigBaKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAWkoooAKKWkoAKKKKACiiigAooooASiiigBpqnefcarh6VUvf9WfpQBzHhv8A5Gq7/wCuY/rXbVxPho/8VVd/9cx/Wu2FABSUtHegAoNGaM0AFFGKKAClpKKAFopO9FACn7pp1t/r4v8AeH86Z/Cafbf8fEX+8P50Acd4o/4+br/faulsf+PKD/cH8q5rxR/x83X++3866ax/48oP9wfyoAmooooAKKKKAFopO9LQAUUUUAFFFFABUEv+tb61PUEn+tb60APTrT6YnWn0AGKKKBQAtFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAneg0UHpQA09KqXv3DVvtVO8/1Z+lAHM+G/wDkabv/AK5j+tdrXFeGv+Rpu/8ArmP612tABRRS0AJRRS0AAo60UlAC0dqO1FAAKKBS0AN7GpLb/j4i/wB4fzpn8Jp9t/x8Rf7w/nQBxvic/wCk3X++3866ax/484P9wfyrmfE//Hzdf77V01l/x5wf7g/lQBPRRRQAGiiigApc0lFAC5opKKAFozSA0oOaACoJf9c31qeoJf8AWt9aAHrT6YlPoAKUUlKKACil7UlABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUvWkoAKKWkoAKKKKAEoooNADT0qne/wCrarh6VTvP9W1AHM+Gv+Rpu/8ArmP612tcV4a/5Gm7/wCuY/rXbUAJRSmkoAKKKUUAJRSmkoAKX2pKXtQAUUlFACn7tPtv+PiL/eFM7Gn23+vi/wB4fzoA43xP/wAfN1/vtXTWP/HpB/uD+Vcz4o/4+br/AH2rprH/AI84P9wfyoAnooooAKKKKACgUUUAFFFFABRR3ooAAOahk/1rfWphUMn+tb60APSn0xafQAUUtJQAtFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAlIaXvQaAGnpVK9P7tqunpVK8/1bUAc14a/wCRqu/+uY/rXa1xXhr/AJGq7/65j+tdrQAUUUUAFFFFABRRRQAUUUUAFLSUUAB+6aktv9fF/vD+dRn7pp9r/wAfEX+8KAOP8T/8fN3/AL7fzrpbL/jzg/3B/Kua8Uf8fN1/vtXS2P8Ax5wf7g/lQBPRRRQAUUUUAFFFFABRRRQAUUUUAHeoZP8AWt9amqGT/Wt9aAHpT8UxKfQAuaQUUooAKKDRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUppKACiiigAooooAKKKKACiiigAooooAKKKKAEpDS0HpQA3tVK8/1TZq6elUb3/VtQBzXhr/kabv/AK5j+tdtXE+Gv+Rpu/8ArmP6121ABRRRQAUUUUAFFLSUAFFFFABRRRQAH7pp9r/x8Rf7wph+6afa/wDHxF/vD+dAHHeJ/wDj5uv99v5101j/AMecH+4P5VzPij/j4uv99q6Wx/48oP8AcH8qALFFFFABRRRQAUUUUAFFFFABRRRQAVDJ/rW+tTVDJ/rW+tAD0p4piU+gAoHWigUALRRRQAUUUlAC0UCigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAG0UtBoAaelUrz/VtV01Rvf8AVt9KAOb8Nf8AI03f/XMf1rta4nw1/wAjTd/9cx/Wu2oAKKKKACiiigAooooAKKKKACiiigAPQ0+1/wCPiL/eH86Yehp9r/x8Rf7w/nQBx3ij/j4uv99q6ax4s4P9wfyrmfFH/Hxdf77V01j/AMecH+4P5UAT0UUUAFFFFABRRRQAUUUUAFFFFAAKhk/1rfWpqgk/1zfWgCROtOPWmp1p1ABSikpRQAtFFFAAaQUppFoAWgUgpaACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooNACUhpaQ0AIelUb3/Vt9KvHpVG8/1bUAc14ZH/FUXfr5Y/rXbCuJ8Nf8jTd/9cx/Wu2oAWkoooAKKKKACiiigAooooAKKKKAEPQ1La/8fEX+8P51H2NPtf8AXxf7w/nQBx3ij/j5uv8Afaumsf8Ajzg/3B/KuZ8Uf8fF1/vt/Oumsf8Ajzg/3B/KgCeiiigAooooAKKKKACiiigAooooAKhfHnN9amqGT/XN9aAHpT6YnWn0AHaijtR2oAXvQaQUtABSClNJQAoooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigBKDRSGgBD0qjefcarx6VRvPuNQBzXhr/kabv8A65j+tdtXE+Gv+Rpu/wDrmP612woAKKKKACiiigAooooAKKKKACiiigA7Gn2v/HxF/vD+dM7Gn2v/AB8Rf7w/nQBx3ij/AI+Lr/faumsf+POD/cH8q5jxP/x83X++1dPY/wDHnB/uD+VAE9FFFABRRRQAUUUUAFFFFABRSdKWgAqGX/Wt9amqCT/XN9aAJFp1MSn0ALR2oozQACloFITQAUCilzQAUUUUAFFGaKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigBKQ0tIaAE7VRvfuNV49Ko3v3DQBzXhn/AJGi7/65j+tdtXE+Gf8AkaLv/rmP6121ABRRRQAUUUUAFFFFABRRRQAUUUUAH8JqS1/4+Iv94fzqM9DT7X/Xxf7w/nQBx3ij/j5uv99q6ax/484P9wfyrmPFH/Hzdf77fzrp7H/jzg/3B/KgCeiiigAooooAKKKKACiiigAooooAKgk/1rfWpx1qGT/XN9aAHrTqatO70AKBRSUCgBRR3oo7UAFHtRRQAtFANFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAJSGlpKAEPSqN59xqvHpVG9+41AHNeGf+Rpu/8ArmP6121cT4Z/5Gm7/wBwf1rtqACiiigAooooAKKKKACiiigAooooAQ9DUlr/AK+L/eH86YehqS1/4+Iv94fzoA43xR/x8XX++1dNY/8AHnB/uD+Vcz4o/wCPm6/32rprH/jzg/3B/KgCeiiigAooooAKKKKACiiigAooooAO9Qyf61vrU1QSf61vrQBItOpi0+gAoFFAoAWiiigAoo7UUAApc0CgigAopMYpaACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKWgBKKKKAEpO9LSGgBDVG9+41Xqo333GoA5rw1/yNF3/uD+tdtXE+Gf8AkaLz/rmP612woAKKKKACiiigAooooAKKKKACiiigBD0NSWv/AB8Rf7w/nTOxp9qP9Ii/3h/OgDjvFH/Hxdf77fzrprH/AI84P9wfyrmfFH/Hzdf77fzrprH/AI84P9wfyoAnooooAKKKKACiiigAooooAKKKKACoJP8AXN9anqGT/XN9aAHrTqavSnUABoFFA6UALRRRQAZpaSigBaKKKAFpKBRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUGig0AJSGloNADT0qje/carx6VRvf8AVtQBzXhn/kaLv/rmP612wrifDP8AyNF3/wBcx/Wu2FABRRRQAUUUUAFFFFABRRRQAUUUUAB+61Ptf9fF/vD+dRnoaktf9fF/vD+dAHHeKP8Aj5uv99q6ax/484P9wfyrmfFH/Hxdf77fzrprH/jzg/3B/KgCeiiigAooooAKDRQaACiiigAooooAKhk/1zfWpqgk/wBaw96AJFp1NXpTqACgUUCgBaKKKACiiigAo7UUUAKKKSloAKKO9FABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFACUhpaQ0AIao3v+rarp6VSvf8AVtQBzXhn/kaLv/cH9a7YVxPhn/kabv8A65j+tdsKACiiigAooooAKKKWgBKKKKACiiigBD901Ja/6+L/AHh/Ooz0NSWv/HxF/vD+dAHG+KP+Pm6/32rp7H/jzg/3B/KuZ8Tn/SLr/faumsf+POD/AHB/KgCeiiigAooooAKKKKACiiigAooooAKhl/1rfWpqhk/1zfWgBy9KeKYKfQAUCigdaAFooooAKKKKACiiigAooooAOaUUlFAC96KSloAKKBRQAUUUUAFFAooAKKKKACiiigAooooAKKKKACiiigBKQ0tIaAGmqV9/q2q8elUb3/VtQBzXhn/kaLv/AK5j+tdt2rifDP8AyNF3/wBcx/Wu2HSgAooooAKKKKACiiigAooooAKKKKAEPQ1Ja/6+L/eH86jP3WqS1/18X+8P50Acb4o/4+br/faunsR/ocH+4P5VzHij/j5uv99q6ex/484P9wfyoAnooooAKKKKACiiigAooo7UAFFFFABUMn+ub61NUMv+tb60AOXrTs00dadigBaB1oooAWigUUAFFFFABRRRQAUUUUAFFFFABRRRQAUuaSigApaSlHSgAoo7UUAFFFFABRRRQAUYoooAKKKKACjtRRQAlIaWkNACHpVG+/1bVebpVG9/1bfSgDmvDP8AyNN3/wBcx/Wu2FcT4Z/5Gi7/AOuY/rXbCgAooooAKKKKACiiigAooooAKKKKAEPQ1Ja/6+L/AHh/Ooz0NSWv+vi/3hQBxvij/j5uv99q6ex/484P9wfyrmPFH/Hxdf77V09j/wAecH+4P5UAT0UUUAFFFFABRRRQAUUUUAFFFFABUMn+tb61NUMn+tb60AOXrT6YvWn0AFAooFAC0UUUAFFFFABRRRQAUZoooAKKKKACiiigAooooAKXPFJRQAtFJS80AFFFFABRRRQAUUUUAFFFFABQaKDQAlIaWkNADWqle/6tvpV49Ko33+rNAHNeGf8AkaLv/cH9a7YVxPhn/kaLv/cH9a7YUAFFFFABRRRQAUUUUAFFFFABRRRQAdjT7X/Xxf7w/nUZ6GpLX/Xxf7w/nQBxvij/AI+br/faunsf+PKD/cH8q5jxR/x83X++3866ex/48oP9wfyoAnooooAKKKKACiiigAooooADRRRQAVDJ/rW+tTVDJ/rm+tADl60+o1qSgAoFFAoAWiiigAooooABRRRQAUUUdaACiiigAooooAKK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", "wolfBay": "data:image/jpeg;base64,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"};
+/* ============================================================
+   BELLA CABINET OUTLET — Draft 2 app · rev 2
+   ============================================================ */
+"use strict";
+const fmt = n => "$" + Math.round(n).toLocaleString();
+const IMG = {
+  fab: "assets/fabuwood-galaxy-frost.jpg", fm: "assets/forevermark-ice-white-shaker.jpg",
+  uscd: "assets/uscd-torino-white-pine.jpg", wolf: "assets/wolf-dartmouth-bayside.jpg",
+  jsi: "assets/jsi-dover-white.jpg", cnc: "assets/cnc-country-oak.jpg",
+  cub: "assets/cubitac-artisan-moss.jpg", ghi: "assets/ghi-pacific-grey.jpg"
+};
+/* Door-sample photos usable as 3D textures — inlined as data URIs so WebGL
+   texture upload works from file:// (local images taint the canvas otherwise). */
+const DOOR_B64 = window.DOOR_B64 || {};
+const DOOR_PHOTOS = {
+  fmIce: { url: DOOR_B64.fmIce || IMG.fm, aspect: 900 / 1794, drawer: [0.80, 0.17] },
+  wolfBay: { url: DOOR_B64.wolfBay || IMG.wolf, aspect: 1, drawer: [0.76, 0.20] }
+};
+const BRANDS = [
+  { id: "fab", name: "Fabuwood", tier: "Mid-premium", c: "#44584b", run: 2650, img: IMG.fab,
+    lines: [
+      { n: "Allure Galaxy Frost", c: "#edeae3", s: "shaker", tint: "#edeae3" },
+      { n: "Allure Fusion Blanc", c: "#f4f1ea", s: "shaker", tint: "#f4f1ea" },
+      { n: "Allure Onyx Frost", c: "#3e4a52", s: "shaker", tint: "#46525c" }],
+    spec: { box: "All-plywood box", drawer: "Dovetail soft-close", hinge: "6-way soft-close", warranty: "Limited lifetime", ship: "Assembled 3–5 wk" } },
+  { id: "fm", name: "Forevermark", tier: "Value", c: "#7a8c6f", run: 1590, img: IMG.fm,
+    lines: [
+      { n: "Ice White Shaker", c: "#f2efe8", s: "shaker", photo: "fmIce" },
+      { n: "Uptown White", c: "#f6f4ee", s: "slab", tint: "#f6f4ee" },
+      { n: "Midtown Grey", c: "#9aa0a6", s: "shaker", tint: "#9aa0a6" }],
+    spec: { box: "CARB2 plywood", drawer: "Soft-close", hinge: "Soft-close", warranty: "Limited lifetime", ship: "RTA 1–3 wk" } },
+  { id: "uscd", name: "US Cabinet Depot", tier: "Mid", c: "#7a4a3a", run: 1890, img: IMG.uscd,
+    lines: [
+      { n: "Shaker White", c: "#f3f0e9", s: "shaker", tint: "#f3f0e9" },
+      { n: "Shaker Dove", c: "#d8d4cb", s: "shaker", tint: "#d8d4cb" },
+      { n: "Torino White Pine", c: "#e8e2d4", s: "slab", tint: "#e8e2d4" }],
+    spec: { box: "1/2\" plywood", drawer: "altaMAX metal soft-close", hinge: "6-way DTC soft-close", warranty: "Limited lifetime", ship: "24-hr quick-ship styles" } },
+  { id: "wolf", name: "Wolf Home Products", tier: "Mid", c: "#3d5468", run: 2240, img: IMG.wolf,
+    lines: [
+      { n: "Dartmouth Bayside", c: "#5b7791", s: "shaker", photo: "wolfBay" },
+      { n: "Dartmouth White", c: "#f1eee6", s: "shaker", tint: "#f1eee6" },
+      { n: "York Saddle", c: "#8b5e3c", s: "raised", tint: "#96683f" }],
+    spec: { box: "Plywood option", drawer: "Dovetail soft-close", hinge: "Soft-close", warranty: "Best-in-class ltd lifetime", ship: "Assembled 3–5 wk" } },
+  { id: "jsi", name: "JSI Cabinetry", tier: "Mid", c: "#5a6e63", run: 1980, img: IMG.jsi,
+    lines: [
+      { n: "Dover White", c: "#f4f1ea", s: "shaker", tint: "#f4f1ea" },
+      { n: "Essex Castle", c: "#5c4632", s: "raised", tint: "#66513c" },
+      { n: "Trenton Slab", c: "#e8e6e1", s: "slab", tint: "#e8e6e1" }],
+    spec: { box: "All-plywood box", drawer: "Dovetail soft-close", hinge: "Soft-close", warranty: "Limited lifetime", ship: "Quick-ship regional DCs" } },
+  { id: "cnc", name: "CNC Cabinetry", tier: "Value", c: "#8c7050", run: 1720, img: IMG.cnc,
+    lines: [
+      { n: "Country Oak Honey", c: "#c99a5d", s: "raised", tint: "#c99a5d" },
+      { n: "Luxor White", c: "#f5f2eb", s: "shaker", tint: "#f5f2eb" },
+      { n: "Fashion Navy", c: "#2c3a55", s: "shaker", tint: "#33425e" }],
+    spec: { box: "Plywood box", drawer: "Dovetail soft-close", hinge: "Soft-close", warranty: "Limited lifetime", ship: "RTA 1–3 wk" } },
+  { id: "cub", name: "Cubitac", tier: "Value", c: "#5e6e5a", run: 1680, img: IMG.cub, no3d: true,
+    lines: [
+      { n: "Artisan Moss", c: "#5d6f60", s: "slim-shaker", tint: "#5d6f60" },
+      { n: "Oxford Pastel", c: "#edebe2", s: "shaker", tint: "#edebe2" },
+      { n: "Milan Shale", c: "#6e7276", s: "slab", tint: "#6e7276" }],
+    spec: { box: "Plywood box", drawer: "Soft-close", hinge: "Soft-close", warranty: "Limited lifetime", ship: "24-hr quick-ship styles" } },
+  { id: "ghi", name: "GHI Cabinets", tier: "Entry", c: "#6b7b8c", run: 1430, img: IMG.ghi,
+    lines: [
+      { n: "Pacific Grey Shaker", c: "#97999b", s: "shaker", tint: "#97999b" },
+      { n: "Arcadia White Shaker", c: "#f2efe7", s: "shaker", tint: "#f2efe7" },
+      { n: "Nantucket Linen", c: "#e6e0d2", s: "shaker", tint: "#e6e0d2" }],
+    spec: { box: "Plywood box", drawer: "Soft-close", hinge: "Soft-close", warranty: "5-yr limited", ship: "RTA 1–3 wk" } }
+];
+
+const SHIPLBL = { s24: "24-hr ship", s13: "RTA · 1–3 wk", s35: "Assembled · 3–5 wk" };
+let PID = 0;
+function mk(bid, line, name, sku, price, ship, fam, rating, rc, pop) {
+  const brand = BRANDS.find(b => b.id === bid);
+  return { id: ++PID, brand, line: brand.lines.find(l => l.n === line), name, sku, price, ship, fam, rating, rc, pop };
+}
+const PRODUCTS = [
+  mk("fab", "Allure Galaxy Frost", "Galaxy Frost 30\" Base Cabinet", "FB-GF-B30", 342, "s35", "white", 4.9, 214, 98),
+  mk("fab", "Allure Fusion Blanc", "Fusion Blanc 36\" Sink Base", "FB-FB-SB36", 396, "s35", "white", 4.8, 167, 90),
+  mk("fab", "Allure Onyx Frost", "Onyx Frost 30×30 Wall Cabinet", "FB-OF-W3030", 287, "s35", "navy", 4.7, 102, 74),
+  mk("fm", "Ice White Shaker", "Ice White 30\" Base Cabinet", "FM-IW-B30", 196, "s13", "white", 4.8, 388, 100),
+  mk("fm", "Uptown White", "Uptown White 36\" Sink Base", "FM-UW-SB36", 241, "s13", "white", 4.6, 254, 85),
+  mk("fm", "Midtown Grey", "Midtown Grey 24×84 Pantry", "FM-MG-T2484", 489, "s13", "grey", 4.5, 141, 70),
+  mk("uscd", "Shaker White", "Shaker White 30\" Base Cabinet", "US-SW-B30", 218, "s24", "white", 4.7, 301, 96),
+  mk("uscd", "Shaker Dove", "Shaker Dove 36\" Sink Base", "US-SD-SB36", 268, "s24", "grey", 4.6, 178, 82),
+  mk("uscd", "Torino White Pine", "Torino 30\" Base (Frameless)", "US-TW-B30", 259, "s13", "white", 4.6, 96, 68),
+  mk("wolf", "Dartmouth White", "Dartmouth White 30\" Base", "WF-DW-B30", 289, "s35", "white", 4.8, 226, 88),
+  mk("wolf", "Dartmouth Bayside", "Dartmouth Bayside 36\" Sink Base", "WF-DB-SB36", 334, "s35", "navy", 4.8, 149, 76),
+  mk("wolf", "York Saddle", "York Saddle 30×30 Wall Cabinet", "WF-YS-W3030", 276, "s35", "wood", 4.5, 88, 58),
+  mk("jsi", "Dover White", "Dover White 30\" Base Cabinet", "JS-DV-B30", 236, "s24", "white", 4.7, 192, 86),
+  mk("jsi", "Essex Castle", "Essex Castle 36\" Sink Base", "JS-EC-SB36", 301, "s13", "wood", 4.5, 113, 60),
+  mk("jsi", "Trenton Slab", "Trenton Slab 30×30 Wall Cabinet", "JS-TR-W3030", 221, "s13", "white", 4.6, 77, 55),
+  mk("cnc", "Luxor White", "Luxor White 30\" Base Cabinet", "CN-LX-B30", 202, "s13", "white", 4.5, 243, 80),
+  mk("cnc", "Fashion Navy", "Fashion Navy 36\" Sink Base", "CN-FN-SB36", 257, "s13", "navy", 4.6, 131, 72),
+  mk("cnc", "Country Oak Honey", "Country Oak 24×84 Pantry", "CN-CO-T2484", 512, "s13", "wood", 4.5, 89, 52),
+  mk("cub", "Oxford Pastel", "Oxford Pastel 30\" Base Cabinet", "CB-OX-B30", 198, "s24", "white", 4.5, 205, 78),
+  mk("cub", "Milan Shale", "Milan Shale 30×30 Wall Cabinet", "CB-MS-W3030", 184, "s13", "grey", 4.4, 94, 50),
+  mk("cub", "Artisan Moss", "Artisan Moss 36\" Sink Base", "CB-AM-SB36", 246, "s13", "green", 4.8, 71, 66),
+  mk("ghi", "Arcadia White Shaker", "Arcadia White 30\" Base Cabinet", "GH-AW-B30", 174, "s13", "white", 4.4, 317, 84),
+  mk("ghi", "Pacific Grey Shaker", "Pacific Grey 36\" Sink Base", "GH-PG-SB36", 203, "s13", "grey", 4.6, 164, 62),
+  mk("ghi", "Nantucket Linen", "Nantucket Linen 30×30 Wall", "GH-NL-W3030", 158, "s13", "white", 4.4, 98, 48)
+];
+const TOPS = [
+  { n: "Brittanicca-style", c: "#f2f1ee", p: 3200 },
+  { n: "Storm Grey", c: "#84817a", p: 2900 },
+  { n: "Blackwood", c: "#26241f", p: 3800 }
+];
+const SHIPOPTS = [
+  { n: "Curbside LTL", d: "Free over $2,500", p: 0 },
+  { n: "Liftgate service", d: "Ground-level unload", p: 89 },
+  { n: "Jobsite delivery", d: "Appointment + site drop", p: 129 },
+  { n: "White-glove", d: "Room of choice + debris", p: 249 }
+];
+
+/* ---------------- state ---------------- */
+const state = {
+  view: "home", pro: false, cart: [], shipOpt: 0, compare: [],
+  fBrand: new Set(), fFam: new Set(), fStyle: new Set(), fShip: new Set(), maxp: 600,
+  projectStarted: false, reviewRequested: false,
+  d: { brand: BRANDS[0], line: BRANDS[0].lines[0], asm: false, top: 0, fixed: false }
+};
+const $ = id => document.getElementById(id);
+const proPrice = p => state.pro ? p * 0.88 : p;
+
+/* ---------------- views ---------------- */
+function setView(v) {
+  state.view = v;
+  document.querySelectorAll(".view").forEach(el => el.classList.remove("active"));
+  $("view-" + v).classList.add("active");
+  document.querySelectorAll("#mainnav button").forEach(b => b.classList.toggle("active", b.dataset.v === v));
+  window.scrollTo({ top: 0 });
+  if (v === "designer") initThree();
+  if (v === "project") renderProject();
+}
+function openStyleFilter() {
+  setTimeout(() => {
+    const el = $("filters");
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.style.boxShadow = "0 0 0 3px var(--copper)";
+    setTimeout(() => el.style.boxShadow = "", 1600);
+  }, 120);
+}
+/* ---------------- pro mode ---------------- */
+let proToastShown = false;
+function toggleMode() {
+  state.pro = !state.pro;
+  $("mHome").classList.toggle("on", !state.pro);
+  $("mPro").classList.toggle("on", state.pro);
+  $("probanner").style.display = state.pro ? "block" : "none";
+  if (state.pro && !proToastShown) { proToastShown = true; toast("<b>Bella Pro pricing on</b> — net trade prices shown site-wide. See “Trade Pros” for how the program works."); }
+  render(); syncCart(); applyDesign();
+}
+function enablePro() { if (!state.pro) toggleMode(); window.scrollTo({ top: 0 }); }
+
+/* ---------------- brand tiles ---------------- */
+function tileHTML(b) {
+  return `<button class="btile ${state.fBrand.has(b.id) ? "sel" : ""}" onclick="pickBrand('${b.id}')">
+    <span class="bmono" style="background:${b.c}">${b.name[0]}</span>
+    <span class="bn">${b.name}</span><span class="bt">${b.tier} · 10-ft run from ${fmt(proPrice(b.run))}</span>
+  </button>`;
+}
+function buildBrandStrips() {
+  const html = BRANDS.map(tileHTML).join("");
+  $("brandstrip").innerHTML = html; $("brandstrip2").innerHTML = html;
+}
+function pickBrand(id) {
+  if (state.fBrand.has(id)) state.fBrand.delete(id); else { state.fBrand.clear(); state.fBrand.add(id); }
+  buildBrandStrips(); buildFilters(); render();
+  if (state.view !== "shop") setView("shop");
+}
+/* ---------------- featured ---------------- */
+function buildFeatured() {
+  const feats = [
+    ["fab", "Fabuwood Allure", "Galaxy Frost — the designer favorite"],
+    ["jsi", "JSI Designer Series", "Dover White with quick-ship DCs"],
+    ["cnc", "CNC Country Collection", "Country Oak in C4 Honey"],
+    ["ghi", "GHI All-Wood", "Pacific Grey — entry price, real plywood"]
+  ];
+  $("featgrid").innerHTML = feats.map(([bid, t, s]) => {
+    const b = BRANDS.find(x => x.id === bid);
+    return `<button class="feat-card" onclick="pickBrand('${bid}')"><img src="${b.img}" alt="${t}"><span class="fc-ov"><small>${b.name.toUpperCase()}</small><b>${t}</b><span>${s}</span></span></button>`;
+  }).join("");
+}
+/* ---------------- filters + grid ---------------- */
+function buildFilters() {
+  $("filters").innerHTML = `
+    <div class="fgroup"><h4>Brand</h4>${BRANDS.map(b => `<label><input type="checkbox" ${state.fBrand.has(b.id) ? "checked" : ""} onchange="tgSet('fBrand','${b.id}',this.checked);buildBrandStrips()"> ${b.name}</label>`).join("")}</div>
+    <div class="fgroup"><h4>Color family</h4>${[["white", "Whites & creams"], ["grey", "Greys"], ["navy", "Navy & blues"], ["green", "Greens"], ["wood", "Wood tones"]].map(x => `<label><input type="checkbox" ${state.fFam.has(x[0]) ? "checked" : ""} onchange="tgSet('fFam','${x[0]}',this.checked)"> ${x[1]}</label>`).join("")}</div>
+    <div class="fgroup"><h4>Door style</h4>${[["shaker", "Shaker"], ["slim-shaker", "Slim shaker"], ["slab", "Slab / Euro"], ["raised", "Raised panel"]].map(x => `<label><input type="checkbox" ${state.fStyle.has(x[0]) ? "checked" : ""} onchange="tgSet('fStyle','${x[0]}',this.checked)"> ${x[1]}</label>`).join("")}</div>
+    <div class="fgroup"><h4>Ship speed</h4>${[["s24", "Ships in 24 hrs"], ["s13", "RTA · 1–3 wks"], ["s35", "Assembled · 3–5 wks"]].map(x => `<label><input type="checkbox" ${state.fShip.has(x[0]) ? "checked" : ""} onchange="tgSet('fShip','${x[0]}',this.checked)"> ${x[1]}</label>`).join("")}</div>
+    <div class="fgroup"><h4>Max price: <span id="mpv">${fmt(state.maxp)}</span></h4><input type="range" min="150" max="600" value="${state.maxp}" style="width:100%;accent-color:var(--copper)" oninput="state.maxp=+this.value;$('mpv').textContent=fmt(state.maxp);render()"></div>`;
+}
+function tgSet(set, val, on) { on ? state[set].add(val) : state[set].delete(val); render(); }
+function cardHTML(p) {
+  const price = proPrice(p.price);
+  return `<div class="pcard">
+    <div class="pviz"><img loading="lazy" src="${p.brand.img}" alt="${p.brand.name} ${p.name}"><span class="shipb ${p.ship}">${SHIPLBL[p.ship]}</span></div>
+    <div class="pbody">
+      <span class="pbrand">${p.brand.name}</span>
+      <span class="pname serif">${p.name}</span>
+      <span class="psku">SKU ${p.sku} · ${p.line.n}</span>
+      <span class="stars">${"★".repeat(Math.round(p.rating))}<span>${p.rating} (${p.rc})</span></span>
+      <div class="chips"><span class="chip">${p.brand.spec.box}</span><span class="chip">${p.brand.spec.drawer}</span><span class="chip">${p.brand.spec.warranty}</span></div>
+      <div class="prow"><span class="price">${state.pro ? `<span class="was">${fmt(p.price)}</span>` : ""}${fmt(price)}<small>${state.pro ? "BELLA PRO NET" : "PER CABINET"}</small></span><button class="primary small" onclick="addCart(${p.id})">Add to cart</button></div>
+      <div class="card-actions"><label class="compare-check"><input type="checkbox" ${state.compare.includes(p.id) ? "checked" : ""} onchange="cmpToggle(${p.id},this)"> Compare</label>${p.brand.no3d ? "" : `<button class="text-link" style="font-size:11.5px" onclick="seeIn3D(${p.id})">See in 3D →</button>`}</div>
+    </div></div>`;
+}
+function render() {
+  const q = ($("q").value || "").toLowerCase();
+  let list = PRODUCTS.filter(p =>
+    (!state.fBrand.size || state.fBrand.has(p.brand.id)) &&
+    (!state.fFam.size || state.fFam.has(p.fam)) &&
+    (!state.fStyle.size || state.fStyle.has(p.line.s)) &&
+    (!state.fShip.size || state.fShip.has(p.ship)) &&
+    p.price <= state.maxp &&
+    (!q || `${p.brand.name} ${p.name} ${p.line.n} ${p.sku}`.toLowerCase().includes(q)));
+  const s = $("sortsel").value;
+  list.sort((a, b) => s === "plo" ? a.price - b.price : s === "phi" ? b.price - a.price : s === "ship" ? a.ship.localeCompare(b.ship) : b.pop - a.pop);
+  $("rescount").textContent = `${list.length} products · ${state.fBrand.size ? [...state.fBrand].map(id => BRANDS.find(b => b.id === id).name).join(", ") : "all 8 brands"} · delivery estimate for ${$("zip").value || "30318"}`;
+  $("grid").innerHTML = list.map(cardHTML).join("");
+}
+function seeIn3D(pid) {
+  const p = PRODUCTS.find(x => x.id === pid);
+  if (p.brand.no3d) { toast("3D preview for this brand is coming soon."); return; }
+  state.d.brand = p.brand; state.d.line = p.line;
+  setView("designer");
+  $("dbrand").value = p.brand.id; buildLineSwatches(); applyDesign();
+  toast(`Loaded <b>${p.brand.name} ${p.line.n}</b> into the 3D studio.`);
+}
+/* ---------------- compare ---------------- */
+function cmpToggle(id, el) {
+  if (el && el.checked === false) { state.compare = state.compare.filter(x => x !== id); }
+  else if (!state.compare.includes(id)) {
+    if (state.compare.length >= 3) { if (el) el.checked = false; toast("Compare up to <b>3</b> at a time."); return; }
+    state.compare.push(id);
+  }
+  $("cmppill").style.display = state.compare.length ? "block" : "none";
+  $("cmpn").textContent = state.compare.length;
+}
+function openCompare() {
+  if (!state.compare.length) state.compare = [1, 4, 7];
+  const ps = state.compare.map(id => PRODUCTS.find(p => p.id === id));
+  const rows = [
+    ["", p => `<img src="${p.brand.img}" alt="">`],
+    ["Brand", p => `<b>${p.brand.name}</b> · ${p.brand.tier}`],
+    ["Line / finish", p => p.line.n],
+    ["Price", p => `<b>${fmt(proPrice(p.price))}</b>${state.pro ? " <small>net</small>" : ""}`],
+    ["Box construction", p => p.brand.spec.box],
+    ["Drawers", p => p.brand.spec.drawer],
+    ["Hinges", p => p.brand.spec.hinge],
+    ["Warranty", p => p.brand.spec.warranty],
+    ["Shipping", p => SHIPLBL[p.ship]],
+    ["Rating", p => `${p.rating} ★ (${p.rc})`],
+    ["10-ft run from", p => fmt(proPrice(p.brand.run))],
+    ["", p => `<button class="primary small" onclick="addCart(${p.id});closeModal('cmpmodal')">Add to cart</button>`]
+  ];
+  $("cmptable").innerHTML =
+    `<thead><tr><th></th>${ps.map(p => `<th>${p.name}</th>`).join("")}</tr></thead><tbody>` +
+    rows.map(r => `<tr><td>${r[0]}</td>${ps.map(p => `<td>${r[1](p)}</td>`).join("")}</tr>`).join("") + "</tbody>";
+  $("cmpmodal").style.display = "flex";
+}
+function closeModal(id) { $(id).style.display = "none"; }
+/* ---------------- cart ---------------- */
+function addCart(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  state.cart.push({ t: p.name, sub: `${p.brand.name} · SKU ${p.sku}`, p: p.price, brand: p.brand.name });
+  syncCart(); toast(`Added <b>${p.name}</b> to My Cart.`);
+}
+function syncCart() {
+  $("cartct").textContent = state.cart.length;
+  const groups = {};
+  state.cart.forEach((c, i) => { (groups[c.brand] = groups[c.brand] || []).push([c, i]); });
+  $("cartitems").innerHTML = state.cart.length
+    ? Object.entries(groups).map(([g, items]) =>
+        `<div class="grp">Ships from ${g === "Bella Design" ? "multiple supplier warehouses" : g + " warehouse"}</div>` +
+        items.map(([c, i]) => `<div class="citem"><div><b>${c.t}</b><br><span style="color:var(--muted)">${c.sub}</span></div>
+          <div style="text-align:right"><b>${fmt(proPrice(c.p))}</b><br><button class="rm" onclick="state.cart.splice(${i},1);syncCart()">remove</button></div></div>`).join("")
+      ).join("")
+    : `<div style="color:var(--muted);padding:24px 0;text-align:center">Your cart is empty — try the <button class="text-link" onclick="toggleCart(false);setView('designer')">3D Designer</button>.</div>`;
+  const so = $("shipopts");
+  so.querySelectorAll("label").forEach(l => l.remove());
+  SHIPOPTS.forEach((o, i) => {
+    const l = document.createElement("label");
+    l.className = state.shipOpt === i ? "on" : "";
+    l.innerHTML = `<span><input type="radio" name="ship" ${state.shipOpt === i ? "checked" : ""}>${o.n} <span style="color:var(--muted)">— ${o.d}</span></span><b>${o.p ? "+" + fmt(o.p) : "FREE"}</b>`;
+    l.onclick = () => { state.shipOpt = i; syncCart(); };
+    so.appendChild(l);
+  });
+  const listSub = state.cart.reduce((a, c) => a + c.p, 0);
+  const sub = state.cart.reduce((a, c) => a + proPrice(c.p), 0);
+  const ship = SHIPOPTS[state.shipOpt].p, tot = sub + ship;
+  $("tsub").textContent = fmt(sub);
+  $("prosave").style.display = state.pro && listSub > sub ? "flex" : "none";
+  $("tsave").textContent = "−" + fmt(listSub - sub);
+  $("tship").textContent = ship ? fmt(ship) : "FREE";
+  $("ttot").textContent = fmt(tot);
+  $("tfin").innerHTML = tot > 0 ? `As low as <b>${fmt(Math.ceil(tot / 12))}/mo</b> at 0% APR for 12 months` : "";
+}
+function toggleCart(open) { $("drawer").classList.toggle("open", open); }
+function checkout() {
+  startProject();
+  toggleCart(false);
+  toast("Demo checkout — in production, POs route to each supplier warehouse automatically. Your <b>My Project</b> hub is now live in the menu.");
+  setTimeout(() => setView("project"), 1400);
+}
+/* ---------------- project ---------------- */
+function startProject() {
+  if (!state.projectStarted) { state.projectStarted = true; $("projnav").style.display = "block"; }
+}
+function requestReview() {
+  state.reviewRequested = true;
+  $("reviewbtn").textContent = "Review requested ✓";
+  $("st2").classList.add("done"); $("st2").classList.remove("current"); $("st3").classList.add("current");
+  toast("A <b>KDG designer</b> will review your project and reply within 24–48 hours.");
+}
+function renderProject() {
+  $("projaddr").innerHTML = `Delivering to ZIP <b>${$("zip").value || "30318"}</b> · started today`;
+  const d = state.d;
+  $("pjsummary").textContent = `${d.brand.name} ${d.line.n} perimeter & island · ${TOPS[d.top].n} quartz · ${d.asm ? "Assembled" : "RTA"} · L-shape with island${d.fixed ? " · filler fix applied" : ""}`;
+  const brandsIn = [...new Set(state.cart.map(c => c.brand).filter(b => b !== "Bella Design"))];
+  const ships = [["A", `${d.brand.name} cabinets & trim`, `${d.brand.name} warehouse`, "2–4 wks", "cabinets"]];
+  brandsIn.filter(b => b !== d.brand.name).slice(0, 2).forEach((b, i) => ships.push([String.fromCharCode(66 + i), `${b} items`, `${b} warehouse`, "1–3 wks", "add-ons"]));
+  ships.push([String.fromCharCode(65 + ships.length), "Quartz template & install", "KDG fabrication · Marietta", "after cabinets", "countertops"]);
+  $("shiph").textContent = `${ships.length} coordinated shipments`;
+  $("shipments").innerHTML = ships.map(([n, t, from, when, what]) =>
+    `<div class="shipment"><span class="shipment-icon">${n}</span><div><b>${t}</b><small>Origin: ${from}</small></div><div><b>${when}</b><small>${what}</small></div><span class="shipment-state">PLANNED</span></div>`).join("");
+  const design = designPrice(), items = state.cart.filter(c => c.brand !== "Bella Design").reduce((a, c) => a + proPrice(c.p), 0);
+  $("pjtotals").innerHTML = `
+    <p><span>3D design (cabinets & fillers)</span><b>${fmt(design)}</b></p>
+    <p><span>Countertops</span><b>${fmt(TOPS[state.d.top].p)}</b></p>
+    <p><span>À-la-carte cabinets (${state.cart.filter(c => c.brand !== "Bella Design").length})</span><b>${fmt(items)}</b></p>
+    <p><span>Delivery (${SHIPOPTS[state.shipOpt].n})</span><b>${SHIPOPTS[state.shipOpt].p ? fmt(SHIPOPTS[state.shipOpt].p) : "FREE"}</b></p>
+    <div class="grand"><span>Concept total*</span><b>${fmt(design + items + SHIPOPTS[state.shipOpt].p)}</b></div>
+    <p style="margin-top:10px"><span style="font-size:11px">*Sample prices, not live quotes · 0% APR ≈ ${fmt(Math.ceil((design + items) / 12))}/mo</span></p>`;
+}
+/* ---------------- toast / guide ---------------- */
+let toastT;
+function toast(msg) {
+  const t = $("toast"); t.innerHTML = msg; t.classList.add("show");
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 4200);
+}
+function openGuide() {
+  const steps = [
+    ["1", "Shop the marketplace", "Eight real brands, live filters, real photography.", () => { setView("shop"); }],
+    ["2", "Compare real specs", "The table private-label outlets can't show.", () => { state.compare = [1, 4, 7]; cmpToggle(1); openCompare(); }],
+    ["3", "The 3D studio", "Real brand finishes in 3D — click the fridge marker, then Bella Assist.", () => { setView("designer"); }],
+    ["4", "My Cart & delivery", "Four delivery tiers, financing, supplier grouping.", () => { toggleCart(true); }],
+    ["5", "The Pro story", "Flip the Pro toggle — net pricing site-wide.", () => { setView("pro"); }]
+  ];
+  $("guidesteps").innerHTML = "";
+  steps.forEach(([n, t, d, fn]) => {
+    const b = document.createElement("button");
+    b.innerHTML = `<span>${n}</span><div><b>${t}</b><small>${d}</small></div><em>→</em>`;
+    b.onclick = () => { closeModal("guidemodal"); fn(); };
+    $("guidesteps").appendChild(b);
+  });
+  $("guidemodal").style.display = "flex";
+}
+/* ============================================================
+   3D STUDIO
+   ============================================================ */
+let T = null; // three context
+function designPrice() {
+  const d = state.d;
+  let p = d.brand.run * 2.8;            // L-shape + island ≈ 28 lf vs 10-ft-run anchor
+  if (d.asm) p *= 1.25;
+  p += TOPS[d.top].p;
+  if (d.fixed) p += 74;
+  return Math.round(proPrice(p));
+}
+function onBrand() {
+  const b = BRANDS.find(x => x.id === $("dbrand").value);
+  state.d.brand = b; state.d.line = b.lines[0];
+  buildLineSwatches(); applyDesign();
+}
+function buildLineSwatches() {
+  $("dlines").innerHTML = state.d.brand.lines.map((l, i) => {
+    const bg = l.photo ? `background-image:url('${DOOR_PHOTOS[l.photo].url}')` : `background:${l.c}`;
+    return `<button class="sw ${state.d.line === l ? "sel" : ""}" onclick="state.d.line=state.d.brand.lines[${i}];buildLineSwatches();applyDesign()">
+      <span class="swc" style="${bg}"></span><span class="swn">${l.n}<br><i>${l.s}${l.photo ? " · real sample" : ""}</i></span></button>`;
+  }).join("");
+}
+function buildTopSwatches() {
+  $("dtops").innerHTML = TOPS.map((t, i) => `<button class="sw ${state.d.top === i ? "sel" : ""}" onclick="state.d.top=${i};buildTopSwatches();applyDesign()">
+    <span class="swc" style="background:${t.c}"></span><span class="swn">${t.n}<br><i>+${fmt(t.p)}</i></span></button>`).join("");
+}
+function setAsm(v) { state.d.asm = v; $("tRTA").classList.toggle("on", !v); $("tASM").classList.toggle("on", v); applyDesign(); }
+function applyDesign() {
+  refinishTop();
+  $("dprice").textContent = fmt(designPrice());
+  $("dmeta").textContent = `${state.d.brand.name} · ${state.d.line.n} · ${state.d.asm ? "Assembled" : "RTA"} · L-shape + island`;
+  $("dfin").textContent = `≈ ${fmt(Math.ceil(designPrice() / 12))}/mo at 0% APR${state.pro ? " · Bella Pro net" : ""}`;
+  $("slBrand").textContent = `${state.d.brand.name} · ${state.d.line.n}`;
+  $("slLine").textContent = `${TOPS[state.d.top].n} quartz · brass hardware`;
+  if (T && !T.dead) refinish();
+}
+function addDesign() {
+  const d = state.d;
+  const existing = state.cart.findIndex(c => c.brand === "Bella Design");
+  const item = { t: `3D Design — ${d.brand.name} ${d.line.n}`, sub: `L-shape + island · ${d.asm ? "Assembled" : "RTA"} · ${TOPS[d.top].n} quartz${d.fixed ? " · filler fix" : ""}`, p: designPrice() / (state.pro ? 0.88 : 1), brand: "Bella Design" };
+  if (existing >= 0) state.cart[existing] = item; else state.cart.push(item);
+  startProject(); syncCart(); toggleCart(true);
+  toast("Design added to <b>My Cart</b> — and your <b>My Project</b> hub just opened in the menu.");
+}
+function sendDesigner() {
+  startProject();
+  toast("Design sent! A <b>KDG designer</b> will return your full plan & itemized quote within <b>24–48 hours</b>. Track it in <b>My Project</b>.");
+}
+/* ---------- textures ---------- */
+const texCache = {};
+function loadImg(url) {
+  return new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = url; });
+}
+function canvasTex(canvas) {
+  const t = new THREE.CanvasTexture(canvas);
+  t.encoding = THREE.sRGBEncoding;
+  t.anisotropy = T.ren.capabilities.getMaxAnisotropy();
+  return t;
+}
+async function lineMaps(line) {
+  const key = line.n;
+  if (texCache[key]) return texCache[key];
+  let doorTex, drawerTex, aspect;
+  if (line.photo) {
+    const ph = DOOR_PHOTOS[line.photo];
+    const im = await loadImg(ph.url);
+    const c = document.createElement("canvas"); c.width = im.width; c.height = im.height;
+    c.getContext("2d").drawImage(im, 0, 0);
+    doorTex = canvasTex(c); aspect = ph.aspect;
+    drawerTex = doorTex.clone(); drawerTex.needsUpdate = true;
+    drawerTex.repeat.set(1, ph.drawer[1]); drawerTex.offset.set(0, ph.drawer[0]);
+  } else if (line.s === "slab") {
+    const c = document.createElement("canvas"); c.width = 256; c.height = 512;
+    const x = c.getContext("2d");
+    x.fillStyle = line.tint; x.fillRect(0, 0, 256, 512);
+    const g = x.createLinearGradient(0, 0, 256, 0);
+    g.addColorStop(0, "rgba(255,255,255,.10)"); g.addColorStop(.5, "rgba(0,0,0,.05)"); g.addColorStop(1, "rgba(255,255,255,.07)");
+    x.fillStyle = g; x.fillRect(0, 0, 256, 512);
+    doorTex = canvasTex(c); drawerTex = doorTex; aspect = .5;
+  } else {
+    /* tint the real Ice White shaker photo → any painted shaker/raised finish keeps real profile shadows */
+    const ph = DOOR_PHOTOS.fmIce;
+    const im = await loadImg(ph.url);
+    const c = document.createElement("canvas"); c.width = im.width; c.height = im.height;
+    const x = c.getContext("2d");
+    x.drawImage(im, 0, 0);
+    x.globalCompositeOperation = "multiply";
+    x.fillStyle = line.tint; x.fillRect(0, 0, c.width, c.height);
+    doorTex = canvasTex(c); aspect = ph.aspect;
+    drawerTex = doorTex.clone(); drawerTex.needsUpdate = true;
+    drawerTex.repeat.set(1, ph.drawer[1]); drawerTex.offset.set(0, ph.drawer[0]);
+  }
+  const out = { doorTex, drawerTex, aspect, edge: new THREE.Color(line.c) };
+  texCache[key] = out;
+  return out;
+}
+function frontMat(tex, w, h, imgAspect) {
+  const t = tex.clone(); t.needsUpdate = true;
+  const a = w / h;
+  if (imgAspect && a < imgAspect) { t.repeat.set(a / imgAspect * (tex.repeat.x || 1), t.repeat.y || 1); t.offset.x = (1 - t.repeat.x) / 2; }
+  return new THREE.MeshStandardMaterial({ map: t, roughness: .42, metalness: 0, envMapIntensity: .7 });
+}
+function woodFloorTex() {
+  const c = document.createElement("canvas"); c.width = 512; c.height = 512;
+  const x = c.getContext("2d");
+  x.fillStyle = "#c2a679"; x.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 8; i++) {
+    x.fillStyle = `hsl(${30 + Math.random() * 8},${38 + Math.random() * 14}%,${58 + Math.random() * 12}%)`;
+    x.fillRect(0, i * 64, 512, 62);
+    x.fillStyle = "rgba(90,60,30,.25)"; x.fillRect(0, i * 64 + 62, 512, 2);
+    for (let k = 0; k < 40; k++) { x.fillStyle = "rgba(120,85,50,.08)"; x.fillRect(Math.random() * 512, i * 64 + Math.random() * 60, 40 + Math.random() * 90, 1); }
+  }
+  const t = canvasTex(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(3, 3);
+  return t;
+}
+/* ---------- scene build ---------- */
+function initThree() {
+  if (T) { if (!T.dead) T.resize(); return; }
+  const stage = $("stage");
+  if (typeof THREE === "undefined") {
+    stage.insertAdjacentHTML("beforeend", `<div style="position:absolute;inset:0;display:grid;place-items:center;color:#5c635c;text-align:center;padding:40px;font-size:14px">3D engine unavailable (are you offline?).<br>Finish swatches and live pricing still work — reconnect and reload for the full 3D studio.</div>`);
+    T = { dead: true }; return;
+  }
+  const W = stage.clientWidth, H = stage.clientHeight;
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xdfe4de);
+  scene.fog = new THREE.Fog(0xdfe4de, 900, 1600);
+  const cam = new THREE.PerspectiveCamera(45, W / H, 1, 3000);
+  cam.position.set(200, 150, 260);
+  const ren = new THREE.WebGLRenderer({ antialias: true });
+  ren.setSize(W, H); ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+  ren.outputEncoding = THREE.sRGBEncoding;
+  ren.toneMapping = THREE.ACESFilmicToneMapping;
+  ren.toneMappingExposure = 1.12;
+  ren.shadowMap.enabled = true; ren.shadowMap.type = THREE.PCFSoftShadowMap;
+  stage.appendChild(ren.domElement);
+  T = { scene, cam, ren, stage, cabinets: [], hinges: [], day: true, presetTgt: null, sel: null, dead: false };
+  /* environment */
+  try {
+    const pmrem = new THREE.PMREMGenerator(ren);
+    scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), .04).texture;
+  } catch (e) { /* RoomEnvironment CDN missing — hemisphere fallback below covers it */ }
+  /* lights */
+  T.sun = new THREE.DirectionalLight(0xfff2dd, 1.45);
+  T.sun.position.set(-30, 190, 160); T.sun.castShadow = true;
+  T.sun.shadow.mapSize.set(2048, 2048); T.sun.shadow.bias = -0.0004;
+  Object.assign(T.sun.shadow.camera, { left: -220, right: 220, top: 220, bottom: -160, near: 10, far: 700 });
+  scene.add(T.sun);
+  T.hemi = new THREE.HemisphereLight(0xffffff, 0xb0a090, .5); scene.add(T.hemi);
+  T.winLight = new THREE.PointLight(0xdfeaf5, .5, 500); T.winLight.position.set(-9, 66, -40); scene.add(T.winLight);
+  /* room */
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(420, 2, 420), new THREE.MeshStandardMaterial({ map: woodFloorTex(), roughness: .62 }));
+  floor.position.set(60, -1, 60); floor.receiveShadow = true; scene.add(floor);
+  const wallM = new THREE.MeshStandardMaterial({ color: 0xefe9dc, roughness: .95 });
+  const backWall = new THREE.Mesh(new THREE.BoxGeometry(380, 120, 4), wallM);
+  backWall.position.set(58, 60, -68); backWall.receiveShadow = true; scene.add(backWall);
+  const leftWall = new THREE.Mesh(new THREE.BoxGeometry(4, 120, 380), wallM);
+  leftWall.position.set(-68, 60, 58); leftWall.receiveShadow = true; scene.add(leftWall);
+  /* window above sink */
+  const winG = new THREE.Group();
+  const winPane = new THREE.Mesh(new THREE.BoxGeometry(40, 34, 1), new THREE.MeshStandardMaterial({ color: 0xcfe4ef, roughness: .1, metalness: .1, emissive: 0xbcd8e8, emissiveIntensity: .55 }));
+  winG.add(winPane);
+  const frM = new THREE.MeshStandardMaterial({ color: 0xfbfbf8, roughness: .5 });
+  [[44, 3, 0, 18.5], [44, 3, 0, -18.5], [3, 34, -21.5, 0], [3, 34, 21.5, 0], [3, 34, 0, 0]].forEach(([w, h, x, y]) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, 2.4), frM); m.position.set(x, y, .4); winG.add(m);
+  });
+  winG.position.set(-9, 59, -65.4); scene.add(winG);
+  T.winPane = winPane;
+  buildKitchen();      // async — textures load in
+  /* controls */
+  T.controls = new THREE.OrbitControls(cam, ren.domElement);
+  T.controls.target.set(12, 30, -4);
+  T.controls.enableDamping = true; T.controls.dampingFactor = .07;
+  T.controls.maxPolarAngle = 1.52; T.controls.minDistance = 60; T.controls.maxDistance = 520;
+  T.controls.addEventListener("start", () => { T.presetTgt = null; setCamBtn(null); });
+  /* picking + drag */
+  const ray = new THREE.Raycaster(), v2 = new THREE.Vector2();
+  const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+  let downPos = null, dragCab = null, dragOff = 0, moved = false;
+  function pointerCabs(e) {
+    const r = ren.domElement.getBoundingClientRect();
+    v2.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(v2, cam);
+    const hits = ray.intersectObjects(T.cabinets.flatMap(c => { const arr = []; c.grp.traverse(o => o.isMesh && arr.push(o)); return arr; }), false);
+    if (hits.length) { let o = hits[0].object; while (o && !o.userData.cab) o = o.parent; return o ? o.userData.cab : null; }
+    return null;
+  }
+  ren.domElement.addEventListener("pointerdown", e => {
+    downPos = [e.clientX, e.clientY]; moved = false;
+    if (T.marker && markerHit(e)) { focusIssue(); return; }
+    const cab = pointerCabs(e);
+    /* click-before-drag: only an ALREADY-SELECTED cabinet can be dragged —
+       orbiting across cabinets never grabs or slides anything */
+    if (cab && cab.drag && T.sel === cab) {
+      dragCab = cab; T.controls.enabled = false;
+      const r = ren.domElement.getBoundingClientRect();
+      v2.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      ray.setFromCamera(v2, cam);
+      const pt = new THREE.Vector3(); ray.ray.intersectPlane(floorPlane, pt);
+      dragOff = (cab.drag === "x" ? cab.grp.position.x - pt.x : cab.grp.position.z - pt.z);
+    }
+  });
+  window.addEventListener("pointermove", e => {
+    if (downPos && (Math.abs(e.clientX - downPos[0]) + Math.abs(e.clientY - downPos[1]) > 6)) moved = true;
+    if (!dragCab || !moved) return;
+    const r = ren.domElement.getBoundingClientRect();
+    v2.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(v2, cam);
+    const pt = new THREE.Vector3();
+    if (!ray.ray.intersectPlane(floorPlane, pt)) return;
+    if (dragCab.drag === "x") dragCab.grp.position.x = Math.round(Math.min(dragCab.max, Math.max(dragCab.min, pt.x + dragOff)));
+    else dragCab.grp.position.z = Math.round(Math.min(dragCab.max, Math.max(dragCab.min, pt.z + dragOff)));
+    $("stagehint").textContent = `${dragCab.label} — release to place`;
+  });
+  window.addEventListener("pointerup", e => {
+    T.controls.enabled = true;
+    if (dragCab && moved) { toast(`<b>${dragCab.label}</b> moved — snapped to the wall run.`); dragCab = null; downPos = null; $("stagehint").textContent = "Click a cabinet to select · click again to open · selected cabinets drag to move"; return; }
+    dragCab = null;
+    if (!downPos || moved) { downPos = null; return; }
+    downPos = null;
+    const cab = pointerCabs(e);
+    if (cab) selectCab(cab); else deselect();
+  });
+  /* resize + loop */
+  T.resize = () => { const w = stage.clientWidth, h = stage.clientHeight; cam.aspect = w / h; cam.updateProjectionMatrix(); ren.setSize(w, h); };
+  window.addEventListener("resize", T.resize);
+  const clock = new THREE.Clock();
+  (function loop() {
+    requestAnimationFrame(loop);
+    const dt = Math.min(clock.getDelta(), .05), t = clock.elapsedTime;
+    T.hinges.forEach(h => { h.rot.rotation.y += (h.target - h.rot.rotation.y) * .12; });
+    T.drawers && T.drawers.forEach(d => {
+      d.mesh.position.z += (d.target - d.mesh.position.z) * .12;
+      if (d.pull) d.pull.position.z = d.mesh.position.z + .9;
+    });
+    if (T.marker) { T.marker.position.y = 46 + Math.sin(t * 2.4) * 2.2; T.marker.material.opacity = .75 + Math.sin(t * 4) * .25; T.marker.quaternion.copy(cam.quaternion); }
+    if (T.presetTgt) {
+      cam.position.lerp(T.presetTgt.pos, .055);
+      T.controls.target.lerp(T.presetTgt.tgt, .055);
+      if (cam.position.distanceTo(T.presetTgt.pos) < 1.5) T.presetTgt = null;
+    }
+    if (T.sel) updateSelPop();
+    T.controls.update();
+    ren.render(scene, cam);
+  })();
+  setCam("plan");
+  setTimeout(() => toast("Start in <b>plan view</b>: click a cabinet, drag it where you want it — then hit <b>3D Overview</b> to walk the room."), 700);
+}
+/* ---------- kitchen geometry ---------- */
+function contactShadow(w, d, x, z) {
+  const c = document.createElement("canvas"); c.width = 128; c.height = 128;
+  const x2 = c.getContext("2d");
+  const g = x2.createRadialGradient(64, 64, 8, 64, 64, 62);
+  g.addColorStop(0, "rgba(0,0,0,.34)"); g.addColorStop(1, "rgba(0,0,0,0)");
+  x2.fillStyle = g; x2.fillRect(0, 0, 128, 128);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false }));
+  m.rotation.x = -Math.PI / 2; m.position.set(x, .3, z);
+  return m;
+}
+function brass() { return new THREE.MeshStandardMaterial({ color: 0xc9a227, metalness: .9, roughness: .28 }); }
+function steel() { return new THREE.MeshStandardMaterial({ color: 0xb9bcbe, metalness: .85, roughness: .3 }); }
+function makeCab(opts) {
+  /* opts: {w,h,d, kind:'doors'|'drawers'|'sink'|'island', wall:false, label, drag, min,max, run} */
+  const g = new THREE.Group();
+  const carcass = new THREE.Mesh(new THREE.BoxGeometry(opts.w - .6, opts.h, opts.d), new THREE.MeshStandardMaterial({ color: 0xddd8cf, roughness: .6 }));
+  carcass.position.y = opts.h / 2; carcass.castShadow = carcass.receiveShadow = true;
+  g.add(carcass);
+  if (!opts.wall) {
+    const tk = new THREE.Mesh(new THREE.BoxGeometry(opts.w - 2, 4.5, opts.d - 5), new THREE.MeshStandardMaterial({ color: 0x22251f }));
+    tk.position.set(0, 2.25, -2.5); g.add(tk); carcass.position.y = opts.h / 2 + 4.5;
+  }
+  const cab = { grp: g, opts, doors: [], drawers: [], label: opts.label, drag: opts.drag, min: opts.min, max: opts.max, run: opts.run, open: false };
+  g.traverse(o => o.userData.cab = cab);
+  g.userData.cab = cab;
+  T.cabinets.push(cab);
+  return cab;
+}
+function addDoors(cab, count) {
+  const { w, h, d, wall } = cab.opts;
+  const dh = h - 1.6, y0 = (wall ? 0 : 4.5);
+  const dw = (w - 1.8) / count;
+  for (let i = 0; i < count; i++) {
+    const hingeLeft = i < count / 2;
+    const hinge = new THREE.Group();
+    hinge.position.set(-w / 2 + .9 + i * dw + (hingeLeft ? 0 : dw), y0 + h / 2, d / 2 + .5);
+    const doorMesh = new THREE.Mesh(new THREE.BoxGeometry(dw - .5, dh, 1.4), []);
+    doorMesh.position.x = hingeLeft ? (dw - .5) / 2 + .25 : -(dw - .5) / 2 - .25;
+    doorMesh.castShadow = true;
+    hinge.add(doorMesh);
+    const knob = new THREE.Mesh(new THREE.CylinderGeometry(.55, .55, 1.4, 10), brass());
+    knob.rotation.x = Math.PI / 2;
+    knob.position.set(hingeLeft ? dw - 3 : -dw + 3, 0, 1.2);
+    hinge.add(knob);
+    cab.grp.add(hinge);
+    const rec = { rot: hinge, target: 0, dir: hingeLeft ? -1 : 1, mesh: doorMesh, w: dw - .5, h: dh };
+    cab.doors.push(rec); T.hinges.push(rec);
+    hinge.traverse(o => o.userData.cab = cab);
+  }
+}
+function addDrawers(cab, count) {
+  const { w, h, d } = cab.opts;
+  T.drawers = T.drawers || [];
+  const dh = (h - 1.6) / count;
+  for (let i = 0; i < count; i++) {
+    const front = new THREE.Mesh(new THREE.BoxGeometry(w - 2.3, dh - .8, 1.4), []);
+    front.position.set(0, 4.5 + 1.2 + dh * i + dh / 2 - .4, d / 2 + .7);
+    front.castShadow = true;
+    cab.grp.add(front);
+    const pull = new THREE.Mesh(new THREE.BoxGeometry(Math.min(w * .45, 12), .9, .9), brass());
+    pull.position.set(0, front.position.y + dh / 4, d / 2 + 1.6);
+    cab.grp.add(pull);
+    const rec = { mesh: front, target: front.position.z, home: front.position.z, pull, pullHome: pull.position.z };
+    cab.drawers.push(rec); T.drawers.push(rec);
+    front.userData.cab = cab; pull.userData.cab = cab;
+  }
+}
+function buildKitchen() {
+  const S = T.scene;
+  T.kitchen = new THREE.Group();
+  /* ---- back run (along x, wall at z=-66) ---- */
+  const backZ = -66 + 12.6;
+  function backCab(w, x, kind, label, drag) {
+    const cab = makeCab({ w, h: 30, d: 24, kind, label, drag: drag ? "x" : null, min: -63 + w / 2, max: 74 - w / 2, run: "back" });
+    cab.grp.position.set(x + w / 2, 0, backZ);
+    T.kitchen.add(cab.grp);
+    if (kind === "drawers") addDrawers(cab, 3); else addDoors(cab, w > 27 ? 2 : 1);
+    if (kind === "sink") { cab.isSink = true; }
+    return cab;
+  }
+  backCab(24, -63, "doors", 'B24 base', true);
+  backCab(36, -39, "sink", 'SB36 sink base', true);
+  backCab(30, -3, "drawers", 'DB30 drawer base', true);
+  backCab(18, 57, "doors", 'B18 base', true);
+  /* helper: register appliances as selectable, draggable, REMOVABLE objects */
+  function registerObj(grp, label, min, max) {
+    const cab = { grp, opts: { w: 30, h: 36, d: 26, wall: false }, doors: [], drawers: [], label, drag: "x", min, max, run: "back", removable: true, open: false };
+    grp.traverse(o => o.userData.cab = cab);
+    grp.userData.cab = cab;
+    T.cabinets.push(cab);
+    return cab;
+  }
+  /* range at x=42 (27..57), hood grouped with it so both remove together */
+  const range = new THREE.Group();
+  const rbody = new THREE.Mesh(new THREE.BoxGeometry(30, 36, 26), steel());
+  rbody.position.set(0, 18, 0); rbody.castShadow = true; range.add(rbody);
+  const rhandle = new THREE.Mesh(new THREE.CylinderGeometry(.8, .8, 26, 8), steel());
+  rhandle.rotation.z = Math.PI / 2; rhandle.position.set(0, 30, 13.5); range.add(rhandle);
+  for (let i = 0; i < 4; i++) {
+    const b = new THREE.Mesh(new THREE.CylinderGeometry(3.4, 3.4, .5, 16), new THREE.MeshStandardMaterial({ color: 0x1d1f1e, roughness: .6 }));
+    b.position.set(-8 + (i % 2) * 16, 36.3, -5 + Math.floor(i / 2) * 11);
+    range.add(b);
+  }
+  const hbase = new THREE.Mesh(new THREE.BoxGeometry(32, 7, 20), steel()); hbase.position.set(0, 66, -2); range.add(hbase);
+  const chim = new THREE.Mesh(new THREE.BoxGeometry(12, 26, 12), steel()); chim.position.set(0, 82, -6.6); range.add(chim);
+  range.position.set(42, 0, backZ);
+  T.kitchen.add(range);
+  const rangeCab = registerObj(range, '30" range + hood', -63 + 15, 74 - 15);
+  rangeCab.opts.h = 36;
+  /* fridge 78..114 + missing filler at 74..78 */
+  const fr = new THREE.Group();
+  const frbody = new THREE.Mesh(new THREE.BoxGeometry(36, 70, 28), steel());
+  frbody.position.set(0, 35, 0); frbody.castShadow = true; fr.add(frbody);
+  [0, 1].forEach(i => {
+    const h = new THREE.Mesh(new THREE.CylinderGeometry(.7, .7, 26 - i * 8, 8), steel());
+    h.position.set(-8, 38 + (i ? -22 : 8), 14.5); fr.add(h);
+  });
+  const gap = new THREE.Mesh(new THREE.BoxGeometry(36.4, .8, 28.2), new THREE.MeshStandardMaterial({ color: 0x3a3d3f }));
+  gap.position.set(0, 48, 0); fr.add(gap);
+  fr.position.set(96, 0, -66 + 15);
+  T.kitchen.add(fr);
+  const frCab = registerObj(fr, 'FR36 refrigerator', -63 + 18, 100);
+  frCab.opts.h = 70; frCab.isFridge = true;
+  /* ---- left run (along z, wall at x=-66) ---- */
+  const leftX = -66 + 12.6;
+  function leftCab(w, z, kind, label) {
+    const cab = makeCab({ w, h: 30, d: 24, kind, label, drag: "z", min: -28 + w / 2, max: 56 - w / 2, run: "left" });
+    cab.grp.rotation.y = Math.PI / 2;
+    cab.grp.position.set(leftX, 0, z + w / 2);
+    T.kitchen.add(cab.grp);
+    if (kind === "drawers") addDrawers(cab, 3); else addDoors(cab, w > 27 ? 2 : 1);
+    return cab;
+  }
+  leftCab(30, -28, "doors", 'B30 base');
+  leftCab(30, 2, "drawers", 'DB30 drawer base');
+  leftCab(24, 32, "doors", 'B24 base');
+  /* ---- wall cabinets ---- */
+  function wallCabBack(w, x, label) {
+    const cab = makeCab({ w, h: 30, d: 13, wall: true, kind: "doors", label, run: "backwall" });
+    cab.grp.position.set(x + w / 2, 54, -66 + 8.5);
+    T.kitchen.add(cab.grp); addDoors(cab, w > 20 ? 2 : 1);
+    return cab;
+  }
+  wallCabBack(24, -63, 'W2430 wall');
+  wallCabBack(30, -39, 'W3030 wall');
+  wallCabBack(18, 57, 'W1830 wall');
+  const wl = makeCab({ w: 30, h: 30, d: 13, wall: true, kind: "doors", label: 'W3030 wall', run: "leftwall" });
+  wl.grp.rotation.y = Math.PI / 2; wl.grp.position.set(-66 + 8.5, 54, -28 + 15);
+  T.kitchen.add(wl.grp); addDoors(wl, 2);
+  const wl2 = makeCab({ w: 30, h: 30, d: 13, wall: true, kind: "doors", label: 'W3030 wall', run: "leftwall" });
+  wl2.grp.rotation.y = Math.PI / 2; wl2.grp.position.set(-66 + 8.5, 54, 2 + 15);
+  T.kitchen.add(wl2.grp); addDoors(wl2, 2);
+  /* under-cabinet light strips (evening mode) */
+  T.strips = [];
+  [[-51, -66 + 14, 24], [-24, -66 + 14, 30], [66, -66 + 14, 18]].forEach(([x, z, w]) => {
+    const s = new THREE.Mesh(new THREE.BoxGeometry(w, .8, 1.5), new THREE.MeshStandardMaterial({ color: 0xffe3b0, emissive: 0xffc37a, emissiveIntensity: 0 }));
+    s.position.set(x, 53.2, z + 4); T.kitchen.add(s); T.strips.push(s);
+    const pl = new THREE.PointLight(0xffcf8f, 0, 90); pl.position.set(x, 50, z + 6); T.kitchen.add(pl); T.strips.push(pl);
+  });
+  /* ---- island ---- */
+  const island = makeCab({ w: 66, h: 30, d: 30, kind: "island", label: 'Island — 66" × 42"', drag: "x", min: -20, max: 80, run: "island" });
+  island.grp.position.set(24, 0, 34);
+  T.kitchen.add(island.grp);
+  addDoors(island, 3);
+  /* island top + counters + backsplash share the refinishable top material */
+  T.topMat = new THREE.MeshStandardMaterial({ color: 0xf2f1ee, roughness: .22, metalness: .05, envMapIntensity: .9 });
+  T.counters = [];
+  function slab(w, d, x, z, geoRound) {
+    const geo = (THREE.RoundedBoxGeometry && geoRound) ? new THREE.RoundedBoxGeometry(w, 3, d, 3, .8) : new THREE.BoxGeometry(w, 3, d);
+    const m = new THREE.Mesh(geo, T.topMat);
+    m.position.set(x, 36, z); m.castShadow = m.receiveShadow = true;
+    T.kitchen.add(m); T.counters.push(m);
+    return m;
+  }
+  slab(90, 26.5, -18, -66 + 13.2);       // back, left of range  (-63..27)
+  slab(18, 26.5, 66, -66 + 13.2);        // back, right of range (57..75)
+  slab(26.5, 86, -66 + 13.2, 15);        // left run  (z -28..58)
+  const it = slab(78, 44, 24, 34, true); // island top (overhang front)
+  /* parent the island top to the island so dragging moves them together */
+  T.kitchen.remove(it);
+  it.position.set(0, 36, 3);
+  island.grp.add(it);
+  it.userData.cab = island;
+  island.top = it;
+  /* backsplash */
+  T.splash = [];
+  [[90, -18], [18, 66]].forEach(([w, x]) => {
+    const bs = new THREE.Mesh(new THREE.BoxGeometry(w, 17, 1.2), T.topMat);
+    bs.position.set(x, 45.5, -66 + 2.8); T.kitchen.add(bs); T.splash.push(bs);
+  });
+  const bsl = new THREE.Mesh(new THREE.BoxGeometry(1.2, 17, 86), T.topMat);
+  bsl.position.set(-66 + 2.8, 45.5, 15); T.kitchen.add(bsl); T.splash.push(bsl);
+  /* sink + faucet */
+  const sink = new THREE.Mesh(new THREE.BoxGeometry(28, 1.4, 18), new THREE.MeshStandardMaterial({ color: 0xd7d9da, metalness: .7, roughness: .35 }));
+  sink.position.set(-21, 37.6, -66 + 13); T.kitchen.add(sink);
+  const fbase = new THREE.Mesh(new THREE.CylinderGeometry(1, 1.3, 3, 10), steel()); fbase.position.set(-21, 39, -66 + 5); T.kitchen.add(fbase);
+  const fpipe = new THREE.Mesh(new THREE.CylinderGeometry(.7, .7, 12, 10), steel()); fpipe.position.set(-21, 45, -66 + 5); T.kitchen.add(fpipe);
+  const fsp = new THREE.Mesh(new THREE.CylinderGeometry(.6, .6, 8, 10), steel()); fsp.rotation.x = Math.PI / 2; fsp.position.set(-21, 50.6, -66 + 9); T.kitchen.add(fsp);
+  /* pendants over island */
+  T.pendants = [];
+  [4, 44].forEach(x => {
+    const rod = new THREE.Mesh(new THREE.CylinderGeometry(.4, .4, 32, 8), new THREE.MeshStandardMaterial({ color: 0x2a2c2a }));
+    rod.position.set(x, 104, 34); T.kitchen.add(rod);
+    const shade = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 7.5, 7, 20, 1, true), new THREE.MeshStandardMaterial({ color: 0xb0733f, metalness: .55, roughness: .35, side: THREE.DoubleSide }));
+    shade.position.set(x, 86, 34); T.kitchen.add(shade);
+    const bulb = new THREE.Mesh(new THREE.SphereGeometry(1.6, 12, 12), new THREE.MeshStandardMaterial({ color: 0xfff2cf, emissive: 0xffd9a0, emissiveIntensity: .5 }));
+    bulb.position.set(x, 84, 34); T.kitchen.add(bulb); T.pendants.push(bulb);
+    const pl = new THREE.PointLight(0xffd9a0, .35, 160); pl.position.set(x, 82, 34); T.kitchen.add(pl); T.pendants.push(pl);
+  });
+  /* stools */
+  [10, 38].forEach(x => {
+    const seat = new THREE.Mesh(new THREE.CylinderGeometry(7, 7, 2.4, 20), new THREE.MeshStandardMaterial({ color: 0xd9cdb8, roughness: .8 }));
+    seat.position.set(x, 24, 64); seat.castShadow = true; T.kitchen.add(seat);
+    for (let i = 0; i < 4; i++) {
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(.6, .6, 24, 8), new THREE.MeshStandardMaterial({ color: 0x3c3a35 }));
+      leg.position.set(x + Math.cos(i * 1.57 + .78) * 5, 12, 64 + Math.sin(i * 1.57 + .78) * 5);
+      T.kitchen.add(leg);
+    }
+  });
+  /* contact shadows */
+  T.kitchen.add(contactShadow(160, 44, -6, -52));
+  T.kitchen.add(contactShadow(44, 110, -52, 12));
+  T.kitchen.add(contactShadow(100, 66, 24, 36));
+  /* missing filler marker */
+  const mc = document.createElement("canvas"); mc.width = 128; mc.height = 128;
+  const mx = mc.getContext("2d");
+  mx.beginPath(); mx.arc(64, 64, 52, 0, 7); mx.fillStyle = "#d98a3a"; mx.fill();
+  mx.lineWidth = 8; mx.strokeStyle = "#fff"; mx.stroke();
+  mx.fillStyle = "#fff"; mx.font = "900 72px Georgia"; mx.textAlign = "center"; mx.fillText("!", 64, 90);
+  T.marker = new THREE.Mesh(new THREE.PlaneGeometry(12, 12), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(mc), transparent: true, depthWrite: false }));
+  T.marker.position.set(76, 46, -46);
+  T.kitchen.add(T.marker);
+  S.add(T.kitchen);
+  refinish();
+  refinishTop();
+}
+/* marker hit test */
+function markerHit(e) {
+  if (!T.marker || state.d.fixed) return false;
+  const r = T.ren.domElement.getBoundingClientRect();
+  const v = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  const ray = new THREE.Raycaster(); ray.setFromCamera(v, T.cam);
+  return ray.intersectObject(T.marker).length > 0;
+}
+function focusIssue() {
+  T.presetTgt = { pos: new THREE.Vector3(120, 70, 60), tgt: new THREE.Vector3(80, 38, -50) };
+  $("rulecard").style.boxShadow = "0 0 0 3px var(--warn)";
+  setTimeout(() => $("rulecard").style.boxShadow = "", 1800);
+  toast("<b>Design check:</b> the fridge door needs a 3″ filler to clear the wall cabinet. One click fixes it →");
+}
+function bellaAssist() {
+  if (state.d.fixed) return;
+  state.d.fixed = true;
+  if (T && !T.dead) {
+    if (T.marker) { T.kitchen.remove(T.marker); T.marker = null; }
+    const f = new THREE.Mesh(new THREE.BoxGeometry(3.4, 30, 24), new THREE.MeshStandardMaterial({ color: new THREE.Color(state.d.line.c), roughness: .5 }));
+    f.position.set(76, 19.5, -66 + 12.6); f.castShadow = true;
+    T.kitchen.add(f); T.filler = f;
+  }
+  $("health").classList.add("good"); $("hscore").textContent = "100"; $("hmsg").textContent = "Ready for design review";
+  $("rulecard").classList.add("resolved"); $("ruleicon").textContent = "✓";
+  $("ruletitle").textContent = "Filler added — clearance protected";
+  $("ruletext").textContent = "A matching 3″ filler now protects the refrigerator door swing.";
+  $("assistbtn").style.display = "none";
+  applyDesign();
+  toast("<b>Bella Assist</b> added a matching 3″ filler (+$74). Design health: <b>100</b>.");
+}
+/* ---------- finish application ---------- */
+async function refinish() {
+  if (!T || T.dead || !T.cabinets.length) return;
+  const line = state.d.line;
+  const maps = await lineMaps(line);
+  if (state.d.line !== line) return; // user switched during load
+  const edgeMat = new THREE.MeshStandardMaterial({ color: maps.edge, roughness: .5, envMapIntensity: .55 });
+  const carcassMat = new THREE.MeshStandardMaterial({ color: maps.edge.clone().multiplyScalar(.93), roughness: .55, envMapIntensity: .5 });
+  T.cabinets.forEach(cab => {
+    if (cab.removable) return; /* appliances keep their stainless finish */
+    const carcass = cab.grp.children.find(c => c.isMesh && c !== cab.top);
+    if (carcass) carcass.material = carcassMat;
+    cab.doors.forEach(dr => {
+      dr.mesh.material = [edgeMat, edgeMat, edgeMat, edgeMat, frontMat(maps.doorTex, dr.w, dr.h, maps.aspect), edgeMat];
+    });
+    cab.drawers.forEach(d => {
+      d.mesh.material = [edgeMat, edgeMat, edgeMat, edgeMat, frontMat(maps.drawerTex, 1, 1, 0), edgeMat];
+    });
+  });
+  if (T.filler) T.filler.material.color.set(line.c);
+}
+function refinishTop() {
+  if (!T || T.dead || !T.topMat) return;
+  T.topMat.color.set(TOPS[state.d.top].c);
+}
+/* ---------- selection ---------- */
+function selectCab(cab) {
+  if (T.sel === cab) { toggleOpen(cab); return; }
+  deselect();
+  T.sel = cab;
+  cab.grp.traverse(o => {
+    if (o.isMesh && o.material) {
+      (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => {
+        if (m.emissive) { m.userData = m.userData || {}; m.userData.e = m.emissive.getHex(); m.emissive.setHex(0x6b4a1e); m.emissiveIntensity = .35; }
+      });
+    }
+  });
+  const pop = $("selpop");
+  pop.style.display = "block";
+  const openHint = cab.doors.length || cab.drawers.length ? `Click again to open · now drag to move` : `Now drag to move${cab.removable ? " · 🗑 removes it" : ""}`;
+  pop.innerHTML = cab.removable
+    ? `<b>${cab.label}</b><span>Appliance placeholder</span><br><span>${openHint}</span>`
+    : `<b>${cab.label}</b><span>${state.d.brand.name} ${state.d.line.n} · ${state.d.brand.spec.box}</span><br><span>${openHint}</span>`;
+  $("removeBtn").style.display = cab.removable ? "block" : "none";
+  updateSelPop();
+}
+function updateSelPop() {
+  if (!T.sel) return;
+  const p = T.sel.grp.position.clone(); p.y += T.sel.opts.wall ? 70 : Math.max(44, (T.sel.opts.h || 30) + 10);
+  p.project(T.cam);
+  const r = T.ren.domElement.getBoundingClientRect();
+  const pop = $("selpop");
+  pop.style.left = Math.round((p.x * .5 + .5) * r.width - 70) + "px";
+  pop.style.top = Math.round((-p.y * .5 + .5) * r.height - pop.offsetHeight - 8) + "px";
+}
+function deselect() {
+  if (!T.sel) return;
+  T.sel.grp.traverse(o => {
+    if (o.isMesh && o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => {
+      if (m.emissive && m.userData && m.userData.e !== undefined) { m.emissive.setHex(m.userData.e); m.emissiveIntensity = 1; }
+    });
+  });
+  T.sel = null; $("selpop").style.display = "none"; $("removeBtn").style.display = "none";
+}
+function toggleOpen(cab) {
+  if (!cab.doors.length && !cab.drawers.length) return;
+  cab.open = !cab.open;
+  cab.doors.forEach(d => d.target = cab.open ? d.dir * 1.9 : 0);
+  cab.drawers.forEach(d => d.target = cab.open ? d.home + 9 : d.home);
+  if (cab.open) toast(`<b>${cab.label}</b> — ${state.d.brand.spec.drawer.toLowerCase()}, ${state.d.brand.spec.hinge.toLowerCase()}.`);
+}
+/* ---------- camera presets, remove, day/night ---------- */
+const CAMS = {
+  plan: { pos: [18, 440, 42], tgt: [18, 0, 40] },
+  overview: { pos: [210, 160, 270], tgt: [12, 28, -2] },
+  counter: { pos: [40, 56, 96], tgt: [-16, 40, -58] },
+  island: { pos: [120, 82, 150], tgt: [24, 34, 34] }
+};
+function setCam(name) {
+  if (!T || T.dead) return;
+  const c = CAMS[name];
+  T.presetTgt = { pos: new THREE.Vector3(...c.pos), tgt: new THREE.Vector3(...c.tgt) };
+  setCamBtn(name);
+  $("stagehint").textContent = name === "plan"
+    ? "Plan view: click a cabinet to select it, then drag to arrange — jump to 3D Overview when ready"
+    : "Drag to orbit · scroll to zoom · click a cabinet to select, click again to open it";
+}
+function setCamBtn(name) {
+  ["plan", "overview", "counter", "island"].forEach(n => $("cam" + n[0].toUpperCase() + n.slice(1)).classList.toggle("on", n === name));
+}
+function removeSel() {
+  const cab = T && T.sel;
+  if (!cab || !cab.removable) return;
+  deselect();
+  T.kitchen.remove(cab.grp);
+  T.cabinets = T.cabinets.filter(c => c !== cab);
+  if (cab.isFridge && T.marker && !state.d.fixed) {
+    /* the filler issue was about fridge clearance — removing the fridge resolves it */
+    T.kitchen.remove(T.marker); T.marker = null;
+    $("health").classList.add("good"); $("hscore").textContent = "100"; $("hmsg").textContent = "Ready for design review";
+    $("rulecard").classList.add("resolved"); $("ruleicon").textContent = "✓";
+    $("ruletitle").textContent = "Clearance issue resolved";
+    $("ruletext").textContent = "The refrigerator was removed, so no filler is needed.";
+    $("assistbtn").style.display = "none";
+  }
+  toast(`<b>${cab.label}</b> removed — the run stays priced without it. Undo by reloading the design.`);
+}
+function toggleDay() {
+  if (!T || T.dead) return;
+  T.day = !T.day;
+  $("dayBtn").textContent = T.day ? "☾ Evening" : "☀ Daytime";
+  $("dayBtn").classList.toggle("on", !T.day);
+  const day = T.day;
+  T.sun.intensity = day ? 1.45 : .12;
+  T.sun.color.set(day ? 0xfff2dd : 0x8fa6cc);
+  T.hemi.intensity = day ? .5 : .14;
+  T.ren.toneMappingExposure = day ? 1.12 : .62;
+  T.scene.background.set(day ? 0xdfe4de : 0x232a2e);
+  T.scene.fog.color.set(day ? 0xdfe4de : 0x232a2e);
+  T.winPane.material.emissiveIntensity = day ? .55 : .05;
+  T.winPane.material.color.set(day ? 0xcfe4ef : 0x1c2733);
+  T.strips.forEach(s => { if (s.isPointLight) s.intensity = day ? 0 : .9; else s.material.emissiveIntensity = day ? 0 : 1.6; });
+  T.pendants.forEach(p => { if (p.isPointLight) p.intensity = day ? .35 : 1.1; else p.material.emissiveIntensity = day ? .5 : 2.2; });
+  toast(day ? "Back to daylight." : "<b>Evening mode</b> — under-cabinet lighting on. This is the shot that sells the kitchen.");
+}
+/* ---------------- init ---------------- */
+buildBrandStrips(); buildFilters(); buildFeatured(); render(); syncCart();
+$("dbrand").innerHTML = BRANDS.filter(b => !b.no3d).map(b => `<option value="${b.id}">${b.name} — 10-ft run from ${fmt(b.run)}</option>`).join("");
+buildLineSwatches(); buildTopSwatches(); applyDesign();
+$("zip").addEventListener("input", render);
+
+</script>
+</body>
+</html>
